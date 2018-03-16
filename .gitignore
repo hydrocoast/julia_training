@@ -1,0 +1,11 @@
+fig/
+forgif/
+.ipynb_checkpoints/
+*.jpg
+*.png
+*.swp
+*.ipynb
+*.nc
+*~
+#*#
+tmp*
