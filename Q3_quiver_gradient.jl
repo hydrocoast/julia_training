@@ -50,7 +50,7 @@ ax1[:set_xlabel]("X-axis", fontsize=12)
 ax1[:set_ylabel]("Y-axis", fontsize=12)
 ax1[:axis]("scaled")
 
-# Two-dimensional non-filled contour
+# filled contour
 fig2 = figure()
 ax2 = fig2[:add_subplot](111)
 CS2 = ax2[:contourf](xmat, ymat, ϕ, linspace(-6,8,nContour+1), extend="both", cmap="jet")
