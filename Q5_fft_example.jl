@@ -1,8 +1,5 @@
 # Include packages
-using FFTW, Plots
-pyplot()
-#gr()
-#plotlyjs()
+using FFTW
 ##############
 ## functions
 ##############
@@ -65,14 +62,19 @@ data = u[1,:];
 F0 = fft(data,1);
 P = abs.(F0/(nt/2)); # Power
 freq = fftfreq(nt,dt);
-# figure: Power spectrum density
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end
-plot(freq[2:nt2], P[2:nt2], lab="Power spectrum", legend=false,
-     xscale=:log10, yscale=:log10,
-     xlabel="Frequency (Hz)", ylabel="Power (m²/s²)",
-     xlims=(2e-4,1e+1), ylims=(1e-4, 2e+0),
-     );
-#savefig("./fig/PSD2.png");
+# figure: Power spectrum density
+using PyPlot
+fig1 = figure(figsize=(12,6))
+ax1 = fig1[:add_subplot](111)
+ax1[:loglog](freq[2:nt2], P[2:nt2],"b-")
+ax1[:set_xlim](2e-4,1e+1)
+ax1[:set_ylim](1e-4,2e+0)
+ax1[:set_xlabel]("Frequency (Hz)",fontsize=12)
+ax1[:set_ylabel]("Power (m²/s²)",fontsize=12)
+ax1[:grid](which="major",color="k",linestyle="--",alpha=0.5)
+ax1[:grid](which="minor",color="#7D7D7D",linestyle="--",alpha=0.2)
+#fig1[:savefig]("./fig/PSD_PyPlot.png",format="png",dpi=300)
 
 # noise reduction
 fc = 1/100dt # cut off　※この値に根拠はありません．
@@ -80,13 +82,15 @@ cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
 F0[cutoff .& .!freq0] = 0.0;
 datamod = ifft(F0);
+
 # figure 2
 t = 0:dt:(nt-1)*dt;
-plot(t,data, line=(:solid, 1), lab="Raw data", size=(1500, 600),
-     xlabel="Time (s)", ylabel="Wind Speed (m/s)", guidefont=14,
-     tickfont=12,
-     );
-plot!(t,real.(datamod), line=(:solid, 2), color=:magenta, lab="Noise reduced",
-      legend=:topright, legendfont=14,
-      );
-#savefig("./fig/noise_reduced.png")
+fig2 = figure(figsize=(15,6))
+ax2 = fig2[:add_subplot](111)
+ax2[:plot](t,data,"c-")
+ax2[:plot](t,real.(datamod),"m-")
+ax2[:grid](which="major",color="k",linestyle="--",alpha=0.5)
+ax2[:legend](["Raw data","Noise reduced"],fontsize=12,loc=1)
+ax2[:set_xlabel]("Time (s)",fontsize=12)
+ax2[:set_ylabel]("Wind Speed (m/s)",fontsize=12)
+#fig2[:savefig]("./fig/Noise_reduction_PyPlot.png",format="png",dpi=300)

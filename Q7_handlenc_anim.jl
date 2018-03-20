@@ -1,28 +1,42 @@
 # Include packages
-using Plots
-pyplot()
 using NetCDF
-
+using PyPlot, PyCall
+anim = pyimport("matplotlib.animation")
 ##############
-## function(s)
+## functions
 ##############
-function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
-    # setup for ticks
+function ArrangeAxes(ax::PyCall.PyObject)
     xt = collect(Int64, 0:60:360)
     xtl = [collect(0:60:180);collect(-120:60:0)]
     xtl = [@sprintf("%d",xtl[i]) for i=1:length(xtl)]
-    # clibrary
-    clibrary(:misc)
-    # filled contour
-    ## (2018/03 メモ)pyplotバックエンドでは，clims=()の設定は反映されない。なぜ？
-    contour(lon, lat, wspd[:,:,k],fill=true, clims=(0.,16.), color=(:rainbow),
-             size=(800, 400), tickfont=12, axis_ratio=:equal,
-             xlabel="Longitude", ylabel="Latitude", guidefont=12,
-             colorbar_title="(m/s)",
-             title=Dates.format(T[k], "yyyy/mm"), titlefont=14,
-             xticks=(xt, xtl),
-             )
+    yt = collect(Int64, -90:30:90)
+    ax[:axis]("scaled")
+    ax[:set_xlim](xt[1], xt[end])
+    ax[:set_xticks](xt)
+    ax[:set_xticklabels](xtl)
+    ax[:set_xlabel]("Longitude", fontsize=14)
+    ax[:set_yticks](yt)
+    ax[:set_ylim](-90., 90.)
+    ax[:set_ylabel]("Latitude", fontsize=14)
 end
+##############
+function SetColorbar(fig::PyPlot.Figure, PC::PyCall.PyObject)
+    PC[:set_clim](0., 16.)
+    cbar = fig[:colorbar](PC, ticks=linspace(0.,16.,9))
+    cbar[:ax][:set_ylabel]("mean wind speed (m/s)", fontsize=14)
+end
+##############
+function DrawSnapShot(k::Int, ax::PyCall.PyObject,
+                      lon, lat, wspd, Tstr::Array{String,1})
+    @printf("%d, ",k+1)
+    ax[:clear]()
+    #fig[:clear]()
+    PC = ax[:pcolor](lon, lat, wspd[:,:,k+1], cmap="jet")
+    ax[:set_title](Tstr[k+1], fontsize=14)
+    ArrangeAxes(ax)
+    return PC
+end
+##############
 
 ####################
 ## main
@@ -51,12 +65,17 @@ nt = length(torg);
 T = DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
 
 # Figures & animation
-# DrawSnapShot(1, lon, lat, wspd, T) # 1st step
-#if !isdir("./forgif"); mkdir("./forgif"); end
-anim = @animate for k=1:24
-    @printf("%d, ",k)
-    DrawSnapShot(k, lon, lat, wspd, T)
-end
-gifname = "./tmp_monthlywspd.gif"
-if isfile(gifname); rm(gifname); end
-gif(anim, gifname, fps=4) #save the animation
+# figure
+fig = figure(figsize=(9,5))
+ax = fig[:add_subplot](111)
+Tstr = Dates.format.(T, "yyyy/mm")
+
+# 1st step
+PC = DrawSnapShot(0, ax, lon, lat, wspd, Tstr)
+SetColorbar(fig, PC)
+# animation
+wanim = anim[:FuncAnimation](fig, DrawSnapShot, fargs=(ax, lon, lat, wspd, Tstr), interval=400, frames=24)
+wanim[:save]("monthly_wspd_PyPlot.gif", writer="imagemagick")
+# closeをしないとなぜか無限ループになる？ (PyPlot 2.5.0, PyCall 1.15.0時点)
+fig[:clear]()
+close(fig)

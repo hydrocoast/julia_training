@@ -1,8 +1,7 @@
 # Include packages
 using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
-using Plots
-pyplot()
-clibrary(:misc)
+using PyPlot, PyCall
+anim = pyimport("matplotlib.animation")
 if !isdefined(:peaks)
     include("peaks.jl")
 end
@@ -19,13 +18,15 @@ function OpenBoundAll!(D::Array{T,2}, mgn::Int,
     return D
 end
 ##############
-function SnapShot(xvec::Array{T,1}, yvec::Array{T,1}, D::Array{T,2},
-                  titlestr::String) where T<:AbstractFloat
-    surface(xvec,yvec,D,c=(:rainbow),fillalpha=0.9, tickfont=12,
-            xlims=(-3.,3.), ylims=(-3.,3.), zlims=(-8.,10.), clims=(-6.,6.),
-            xlabel="X", ylabel="Y", zlabel="Z", size=(800,600),
-            colorbar=:best, colorbar_title=" ", title=titlestr, titlefont=14,
-            )
+function ForAnim(k::Int, ax::PyCall.PyObject,
+                 xmat::Array{T,2}, ymat::Array{T,2}, P::Array{T,3},
+                 t::Array{T,1}) where T<:AbstractFloat
+    @printf("%d, ",k)
+    ax[:clear]()
+    C = ax[:plot_surface](xmat, ymat, P[:,:,k+1], cmap="jet")
+    C[:set_clim](-6,6)
+    ax[:set_zlim](-8,10)
+    ax[:set_title](@sprintf("%6.2f", t[k+1])*" s")
 end
 ##############
 
@@ -95,29 +96,11 @@ for k = 1:nstep
 end
 
 # For Animation
-#anim = @animate for k=0:10:nstep
-anim = @animate for k=0:10:nstep
-    @printf("%d, ",k)
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-end
-gifname = "./tmp_DiffEq.gif"
-if isfile(gifname); rm(gifname); end
-gif(anim, gifname, fps=10) #save the animation
-
-# Make animation gif when using linux
-#==
-sdirname="./forgif"
-pref="DiffEq-"
-if !isdir(sdirname); mkdir(sdirname); end
-cnt = 0
-for k=0:5:nstep
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-    savefig(sdirname*"/"*pref*@sprintf("%03d",cnt)*".png")
-    cnt += 1
-end
-if contains(Sys.MACHINE,"linux")
-    run(`ffmpeg -i $sdirname/$pref%03d.png -vf palettegen palette.png -y`)
-    run(`ffmpeg -r 20 -i $sdirname/$pref%03d.png -i palette.png -filter_complex paletteuse DiffEq_sample.gif -y`)
-    run(`rm palette.png`)
-end
+fig = figure()
+ax = Axes3D(fig) # ax = fig[:add_subplot](111, projection="3d")はエラー
+#== check 1st step
+ForAnim(0,ax,xmat,ymat,P[1:ny,1:nx,0:nstep],t)
 ==#
+myanim = anim[:FuncAnimation](fig, ForAnim,fargs=(ax, xmat, ymat, P[1:ny,1:nx,0:10:nstep], t[1:10:end]), interval=100, frames=size(t[1:10:end],1))
+myanim[:save]("ConAdvEq_PyPlot.gif", writer="imagemagick")
+close(fig)

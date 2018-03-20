@@ -1,8 +1,3 @@
-using Plots
-pyplot()
-#gr()
-#plotlyjs()
-
 ####################
 ## main
 ####################
@@ -11,11 +6,16 @@ x = 100(rand(N)); #
 x_mean=mean(x);
 x_std=std(x);
 ind = sortperm(x)[end:-1:end-4];
+
 # Figure
-bar(x, xlims=(0.0, Float64(N+1)), ylims=(0.0,105.), legend=false, tickfont=font(12,"sans-serif"),
-    title="N=$(N), mean="*@sprintf("%.2f",x_mean)*", σ="*@sprintf("%0.2f",x_std), # GRバックエンドの場合はσが正しく表示されない
-    size=(800,600))
-xm = [0.0,Float64(N+1)]; ym = [x_mean, x_mean];
-plot!(xm,ym, line=:solid, c=:green, lab="mean")
-scatter!(ind, x[ind], ms=8., color=:red)
-#savefig("./fig/rand_bar.png");
+using PyPlot
+fig = figure()
+ax = fig[:add_subplot](111)
+#ax[:bar](linspace(1,N,50), x, align="center")
+ax[:bar](linspace(1,N,50), x) #綺麗にセンタリングされない？
+ax[:plot]([0,N+1], [x_mean,x_mean],"-",color="#00ff00",lw=2.0) # ","([x1,x2] [y2,y2]) are necessary
+ax[:scatter](ind, x[ind], marker="o", s=25) # Top 5
+ax[:set_xlim](0,N+1)
+ax[:set_ylim](0,105)
+ax[:set_title]("N=$(N), mean="*@sprintf("%.2f",x_mean)*", σ="*@sprintf("%0.2f",x_std))
+ax[:grid](color="k", linestyle="--", alpha=0.5)

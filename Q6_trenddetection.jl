@@ -1,10 +1,5 @@
 # Include packages
 using Polynomials, Interpolations, DSP
-using Plots
-pyplot()
-#gr()
-#plotlyjs()
-
 # ※Q5のようにFFTを使っても良いが，前回と同じパッケージを利用するのも面白くないので，ここでは DSPを使用する
 
 # function
@@ -44,28 +39,31 @@ PSD = pdg.power
 maxval, Tc = findmax(PSD[2:end])
 
 
-# figure 1
 # ticklabel format
 xt = collect(DateTime(2012):Dates.Year(1):DateTime(2017))
 xtl = Dates.format(xt, "Y")
-xt = Dates.value.(xt);
-plot(t, Vint, line=(:solid, 1), lab="Uniformed", size=(800,600),
-     tickfont=12, legend=:topleft, legendfont=14,
-     xticks=(xt, xtl), xlims=(xt[1]-(0.5*365*86400*1e3), xt[end]),
-     xlabel="Year", guidefont=12,
-     ylims=(62,72),
-     )
-# plot!(torg, V, line=(:dash, 1), lab="Raw")
-plot!(t, polyval(lin_p, tsec), lab="Regression 1")
-#savefig("./fig/uniformed_data.png")
+#xt = Dates.value.(xt);
+# Figure 1
+using PyPlot
+fig1 = figure()
+ax1 = fig1[:add_subplot](111)
+ax1[:plot](t,Vint,"r-")
+ax1[:plot](t,polyval(lin_p,tsec),"b-")
+ax1[:set_xlim](xt[1]-Dates.Day(round(0.3*365)), xt[end])
+ax1[:xaxis][:set_ticks](xt)
+ax1[:xaxis][:set_ticklabels](xtl)
+ax1[:grid](which="major",ls="-",alpha=0.5)
+ax1[:legend](["Uniformed","Regression"],fontsize=12,loc=4)
+fig1[:savefig]("./fig/uniformed_data_PyPlot.png",format="png",dpi=300)
 
-plot(days[2:end], PSD[2:end], xscale=:log10, tickfont=12, size=(800, 600),
-     lab="Power", legend=:topleft, legendfont=14,
-     xlabel="Days", guidefont=14,
-     xlims=(1e+00, 1e3),
-     )
-scatter!([days[Tc+1]], [PSD[Tc+1]], ms=10.,
-         lab="Period: "*@sprintf("%.0f",days[Tc+1])*"days",
-         )
-         #ylims=(0., 550.),
-#savefig("./fig/trend.png")
+# Figure 2
+fig2 = figure()
+ax2 = fig2[:add_subplot](111)
+ax2[:semilogx](days[2:end], PSD[2:end],"c-",label="PSD")
+ax2[:semilogx](days[Tc+1], PSD[Tc+1],"mo",label="Period: "*@sprintf("%.0f",days[Tc+1])*"days")
+ax2[:legend](fontsize=12,loc=2)
+ax2[:set_xlim](1e0,1e3)
+ax2[:set_xlabel]("Days",fontsize=12)
+ax2[:grid](which="major",color="k",ls="--",alpha=0.5)
+ax2[:grid](which="minor",color="#7D7D7D",ls="--",alpha=0.5)
+fig2[:savefig]("./fig/trend_PyPlot.png",format="png",dpi=300)
