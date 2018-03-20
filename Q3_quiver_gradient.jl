@@ -51,7 +51,7 @@ quiver!(vec(xmat[1:qs:end,1:qs:end]), vec(ymat[1:qs:end,1:qs:end]),
         color=:black, arrow=(0.3,0.3))
 #savefig("./fig/contour_grad2d.png")
 
-# Two-dimensional non-filled contour
+# filled contour
 clibrary(:misc)
 contour(xvec, yvec, ϕ, c=(:rainbow), fill=true, tickfont=12,
         xlims=(-3.,3.), ylims=(-3.,3.), clims=(-6.,8.),
