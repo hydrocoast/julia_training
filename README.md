@@ -4,7 +4,7 @@ Julia traininig course
 # Overview
 This repository follows [this page](http://hydrocoast.jp/index.php?Julia).   
 This repo contains examples of the codes, which may help you learn JuliaLang.  
-You can make figures and movies as shown below.   
+You can make figures and animations as shown below.   
 <img src="https://github.com/hydrocoast/julia_training/blob/master/ConAdvEq.gif" width="640">   
 master branch is designed to make figures with Plots. 
 PyPlot is also available by `git checkout pyplot`.   
