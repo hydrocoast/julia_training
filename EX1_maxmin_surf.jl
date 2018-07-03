@@ -7,15 +7,10 @@ end
 ####################
 
 # Parameters
-Δx = 0.2; Δy = 0.2;
-X = [-3. 3.]; Y = [-3. 3.];
-xvec = collect(Float64, X[1]:Δx:X[2]);
-yvec = collect(Float64, Y[1]:Δy:Y[2]);
-nx = length(xvec); ny = length(yvec);
-# create mesh data
-xmat = repmat(xvec',ny,1);
-ymat = repmat(yvec,1,nx);
-P = peaks.(xmat,ymat);
+N=31
+xmat, ymat, P = peaks(N);
+xvec = vec(xmat[1,:])
+yvec = vec(ymat[:,1])
 # min & max
 minval, ind = findmin(P);
 row_min,col_min = ind2sub(P,ind);

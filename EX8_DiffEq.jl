@@ -35,13 +35,14 @@ end
 ####################
 
 # Parameters
-Δx = 0.2; Δy = 0.2;
-X = [-3. 3.]; Y = [-3. 3.];
-xvec = collect(Float64, X[1]:Δx:X[2]);
-yvec = collect(Float64, Y[1]:Δy:Y[2]);
-nx = length(xvec); ny = length(yvec);
-xmat = repmat(xvec',ny,1);
-ymat = repmat(yvec,1,nx);
+N=31
+nx = ny = N
+xmat, ymat, P0 = peaks(N);
+xvec = vec(xmat[1,:])
+yvec = vec(ymat[:,1])
+Δx = (xvec[end]-xvec[1])/(N-1)
+Δy = (yvec[end]-yvec[1])/(N-1)
+
 # Parameters 2
 ν = 5.0e-02 # (m²/s)
 Cu = 0.25 # (m/s)
@@ -61,7 +62,8 @@ IE = ny + mgn;
 JE = nx + mgn;
 P = OffsetArray(Float64, IS:IE, JS:JE, 0:nstep);
 # Initial condition t=0
-P[1:ny,1:nx,0] = peaks.(xmat,ymat);
+P[1:ny,1:nx,0] = copy(P0)
+
 # Bonundary
 P[IS:IE,JS:JE,0] = OpenBoundAll!(P[IS:IE,JS:JE,0],mgn, IS,IE,JS,JE,ny,nx)
 # Draw initial conditions
