@@ -19,6 +19,9 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # read csv data
 dataorg = loadcsvsample()
@@ -57,7 +60,7 @@ plot(t, Vint, line=(:solid, 1), lab="Uniformed", size=(800,600),
      )
 # plot!(torg, V, line=(:dash, 1), lab="Raw")
 plot!(t, polyval(lin_p, tsec), lab="Regression 1")
-#savefig("./fig/uniformed_data.png")
+savefig(joinpath(figdir,"uniformed_data.png"))
 
 plot(days[2:end], PSD[2:end], xscale=:log10, tickfont=12, size=(800, 600),
      lab="Power", legend=:topleft, legendfont=14,
@@ -68,4 +71,4 @@ scatter!([days[Tc+1]], [PSD[Tc+1]], ms=10.,
          lab="Period: "*@sprintf("%.0f",days[Tc+1])*"days",
          )
          #ylims=(0., 550.),
-#savefig("./fig/trend.png")
+savefig(joinpath(figdir,"trend.png"))

@@ -55,6 +55,9 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # Data source mat or txt
 #dt, nt, nz, z, u = loadmat();
@@ -72,7 +75,7 @@ plot(freq[2:nt2], P[2:nt2], lab="Power spectrum", legend=false,
      xlabel="Frequency (Hz)", ylabel="Power (m²/s²)",
      xlims=(2e-4,1e+1), ylims=(1e-4, 2e+0),
      );
-#savefig("./fig/PSD2.png");
+savefig(joinpath(figdir,"PSD2.png"));
 
 # noise reduction
 fc = 1/100dt # cut off　※この値に根拠はありません．
@@ -89,4 +92,4 @@ plot(t,data, line=(:solid, 1), lab="Raw data", size=(1500, 600),
 plot!(t,real.(datamod), line=(:solid, 2), color=:magenta, lab="Noise reduced",
       legend=:topright, legendfont=14,
       );
-#savefig("./fig/noise_reduced.png")
+savefig(joinpath(figdir,"noise_reduced.png"))

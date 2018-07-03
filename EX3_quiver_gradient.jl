@@ -22,6 +22,9 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
 N=31
@@ -45,7 +48,7 @@ contour(xvec, yvec, ϕ, c=(:rainbow), fill=false, tickfont=12,
 quiver!(vec(xmat[1:qs:end,1:qs:end]), vec(ymat[1:qs:end,1:qs:end]),
         quiver=(-L*vec(ϕx[1:qs:end,1:qs:end]), -L*vec(ϕy[1:qs:end,1:qs:end])),
         color=:black, arrow=(0.3,0.3))
-#savefig("./fig/contour_grad2d.png")
+savefig(joinpath(figdir,"contour_grad2d.png"))
 
 # filled contour
 clibrary(:misc)
@@ -56,4 +59,4 @@ contour(xvec, yvec, ϕ, c=(:rainbow), fill=true, tickfont=12,
 quiver!(vec(xmat[1:qs:end,1:qs:end]), vec(ymat[1:qs:end,1:qs:end]),
         quiver=(L*vec(ϕxx[1:qs:end,1:qs:end]), L*vec(ϕyy[1:qs:end,1:qs:end])),
         color=:black, arrow=(0.3,0.3))
-#savefig("./fig/contour-filled_grad2d.png")
+savefig(joinpath(figdir,"contour-filled_grad2d.png"))

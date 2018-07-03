@@ -7,6 +7,10 @@ using Polynomials
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
 # load ascii file
 dataorg = readdlm(join([fdir,fname],"/"))
 years = dataorg[:,1]
@@ -28,4 +32,5 @@ plot!(years_ext, polyval(lin_p,years_ext), line=(:dash,2), linecolor=:red, lab="
 plot!(years, polyval(quad_p,years), line=(:solid,2), linecolor=:green, lab="Quad")
 plot!(years_ext, polyval(quad_p,years_ext), line=(:dash,2), linecolor=:green, lab="Quad to 2100")
 xlims!(1945, 2105)
-#savefig("./fig/regression.png")
+# save figure
+savefig(joinpath(figdir,"regression.png"))
