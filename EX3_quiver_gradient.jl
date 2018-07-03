@@ -32,6 +32,9 @@ yvec = vec(ymat[:,1])
 ϕxx,_ = grad2d(ϕx);
 _,ϕyy = grad2d(ϕy);
 
+# directory output
+figdir = "./fig"
+
 using PyPlot
 nContour = 14
 # Two-dimensional non-filled contour
@@ -60,5 +63,6 @@ ax2[:set_ylabel]("Y-axis", fontsize=12)
 ax2[:axis]("scaled")
 
 # save figures
+if !isdir(figdir); mkdir(figdir); end
 fig1[:savefig]("./fig/contour_grad2d_PyPlot.png",format="png",dpi=300)
 fig2[:savefig]("./fig/contourf_grad2d_PyPlot.png", format="png",dpi=300)
