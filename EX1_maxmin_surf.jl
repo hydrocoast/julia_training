@@ -1,8 +1,3 @@
-#if !isdefined(:Plots)
-    using Plots
-    pyplot()
-    #gr()
-#end
 if !isdefined(:peaks)
     include("peaks.jl");
 end
@@ -25,24 +20,42 @@ row_min,col_min = ind2sub(P,ind);
 maxval, ind = findmax(P);
 row_max,col_max = ind2sub(P,ind);
 
-# see http://docs.juliaplots.org/latest/colors/#colorschemes
-clibrary(:misc)
+
+
+# import (not using) in order to avoid conflicts
+import GMT
+include("./GMTprint.jl")
+
 # Two-dimensional contour
-contour(xvec, yvec, P, c=(:rainbow), fill=false, tickfont=12,
-        xlims=(-3.,3.), ylims=(-3.,3.), clims=(-6.,8.),
-        xlabel="X", ylabel="Y", axis_ratio=:equal)
-scatter!([xvec[col_min]], [yvec[row_min]], ms=10., color=:yellow, lab="min")
-scatter!([xvec[col_max]], [yvec[row_max]], ms=10., color=:magenta, lab="max",
-         legendfont=12,legend=:bottomleft, size=(800,600))
-savefig(joinpath(figdir,"contour_2d.png"));  # save figure
+# params and options
+crange="-6/8/1"
+xyrange=[xvec[1] xvec[end] yvec[1] yvec[end]]
+Δ=(xvec[end]-xvec[1])/2(N-1)
+afg="-Ba1f1 -Bx+lX-axis -By+lY-axis -BWSne"
+proj="X12/12"
+# GMT commands
+#cpt = GMT.makecpt(C="seis",T=crange,N=1,I="c")
+cpt = GMT.makecpt(C="rainbow",T=crange,N=1)
+G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
+GMT.grdcontour(afg, G, J=proj, R=xyrange, color=cpt, W="+c")
+GMTprint("contour.ps",dirname=figdir)
 
 # Three dimensional surface plot
-# plot(..., linetype=:surface) , or surface(...)
-# plot(xvec,yvec,P,c=(:rainbow),linetype=:surface,fillalpha=0.9, tickfont=12,
-surface(xvec,yvec,P,c=(:rainbow),fillalpha=0.9, tickfont=12,
-        xlims=(-3.,3.), ylims=(-3.,3.), zlims=(-8.,10.), clims=(-6.,8.),
-        xlabel="X", ylabel="Y", zlabel="Z", size=(800,600), colorbar=:best)
-scatter!([xvec[col_min]], [yvec[row_min]], [minval], ms=8., color=:yellow, lab="min")
-scatter!([xvec[col_max]], [yvec[row_max]], [maxval], ms=8., color=:magenta, lab="max",
-         legendfont=12, legend=:bottomleft)
-savefig(joinpath(figdir,"surface_3d.png")); # save figure
+# params and options
+xyzrange="-3/3/-3/3/-8/9"
+proj="X10"
+afg="-Ba1f1g1 -Bx+lX -By+lY -Bza2f2g1+lZ"
+vw="135/25"
+zratio="0.5"
+crange="-6/8/0.1"
+cbxy="15.5/5.5/11/0.4"
+cbafg="-Ba2f1 -By+lZ"
+
+# GMT commands
+#cpt = GMT.makecpt("-Z -D",C="rainbow",T=crange)
+# GMT.makecptのDオプションでは,色の外挿ができなかったので
+cpt = GMT.gmt("makecpt -Crainbow -T$crange -Z -D -N")
+G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
+GMT.grdview(afg, G, J=proj, R=xyzrange, Jz=zratio, C=cpt, Q="sm", p=vw)
+GMT.scale!(cbafg, D=cbxy, C=cpt)
+GMTprint("surface3D.ps",dirname=figdir)
