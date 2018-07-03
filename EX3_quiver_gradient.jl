@@ -24,17 +24,13 @@ end
 ####################
 
 # Parameters
-Δx = 0.2; Δy = 0.2;
-X = [-3. 3.]; Y = [-3. 3.];
-xvec = collect(Float64, X[1]:Δx:X[2]);
-yvec = collect(Float64, Y[1]:Δy:Y[2]);
-nx = length(xvec); ny = length(yvec);
+N=31
 qs = Int64(2);
 L=0.25;
 # create mesh data
-xmat = repmat(xvec',ny,1);
-ymat = repmat(yvec,1,nx);
-ϕ = peaks.(xmat,ymat);
+xmat, ymat, ϕ = peaks(N);
+xvec = vec(xmat[1,:])
+yvec = vec(ymat[:,1])
 # gradient
 ϕx,ϕy = grad2d(ϕ);
 ϕxx,_ = grad2d(ϕx);
