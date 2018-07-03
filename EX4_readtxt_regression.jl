@@ -3,6 +3,8 @@ using Polynomials
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
+# directory output
+figdir = "./fig"
 # load ascii file
 dataorg = readdlm(join([fdir,fname],"/"))
 years = dataorg[:,1]
@@ -28,4 +30,5 @@ ax[:grid](color="k",linestyle="--", alpha=0.5)
 ax[:set_xlabel]("Year",fontsize=12)
 ax[:set_ylabel]("Wind speed (m/s)",fontsize=12)
 # save figure
-#fig[:savefig]("./fig/regression_analysis.png",format="png",dpi=300)
+if !isdir(figdir); mkdir(figdir); end
+fig[:savefig](joinpath(figdir,"regression_analysis.png"),format="png",dpi=300)

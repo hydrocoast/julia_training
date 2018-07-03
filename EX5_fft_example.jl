@@ -52,6 +52,8 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir = "./fig"
 
 # Data source mat or txt
 #dt, nt, nz, z, u = loadmat();
@@ -93,4 +95,7 @@ ax2[:grid](which="major",color="k",linestyle="--",alpha=0.5)
 ax2[:legend](["Raw data","Noise reduced"],fontsize=12,loc=1)
 ax2[:set_xlabel]("Time (s)",fontsize=12)
 ax2[:set_ylabel]("Wind Speed (m/s)",fontsize=12)
-#fig2[:savefig]("./fig/Noise_reduction_PyPlot.png",format="png",dpi=300)
+
+# save figure
+if !isdir(figdir); mkdir(figdir); end
+fig2[:savefig](joinpath(figdir,"Noise_reduction_PyPlot.png"),format="png",dpi=300)

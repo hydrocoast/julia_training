@@ -14,6 +14,9 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir = "./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # read csv data
 dataorg = loadcsvsample()
@@ -54,7 +57,7 @@ ax1[:xaxis][:set_ticks](xt)
 ax1[:xaxis][:set_ticklabels](xtl)
 ax1[:grid](which="major",ls="-",alpha=0.5)
 ax1[:legend](["Uniformed","Regression"],fontsize=12,loc=4)
-fig1[:savefig]("./fig/uniformed_data_PyPlot.png",format="png",dpi=300)
+fig1[:savefig](joinpath(figdir,"uniformed_data_PyPlot.png"),format="png",dpi=300)
 
 # Figure 2
 fig2 = figure()
@@ -66,4 +69,4 @@ ax2[:set_xlim](1e0,1e3)
 ax2[:set_xlabel]("Days",fontsize=12)
 ax2[:grid](which="major",color="k",ls="--",alpha=0.5)
 ax2[:grid](which="minor",color="#7D7D7D",ls="--",alpha=0.5)
-fig2[:savefig]("./fig/trend_PyPlot.png",format="png",dpi=300)
+fig2[:savefig](joinpath(figdir,"trend_PyPlot.png"),format="png",dpi=300)

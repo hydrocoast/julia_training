@@ -18,6 +18,8 @@ end
 ####################
 ## main
 ####################
+# directory output
+figdir = "./fig"
 
 # Parameters
 N=31
@@ -31,9 +33,6 @@ yvec = vec(ymat[:,1])
 ϕx,ϕy = grad2d(ϕ);
 ϕxx,_ = grad2d(ϕx);
 _,ϕyy = grad2d(ϕy);
-
-# directory output
-figdir = "./fig"
 
 using PyPlot
 nContour = 14
@@ -64,5 +63,5 @@ ax2[:axis]("scaled")
 
 # save figures
 if !isdir(figdir); mkdir(figdir); end
-fig1[:savefig]("./fig/contour_grad2d_PyPlot.png",format="png",dpi=300)
-fig2[:savefig]("./fig/contourf_grad2d_PyPlot.png", format="png",dpi=300)
+fig1[:savefig](joinpath(figdir,"contour_grad2d_PyPlot.png"),format="png",dpi=300)
+fig2[:savefig](joinpath(figdir,"contourf_grad2d_PyPlot.png"), format="png",dpi=300)
