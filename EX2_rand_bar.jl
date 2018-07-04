@@ -1,8 +1,3 @@
-using Plots
-pyplot()
-#gr()
-#plotlyjs()
-
 ####################
 ## main
 ####################
@@ -15,11 +10,21 @@ x = 100(rand(N)); #
 x_mean=mean(x);
 x_std=std(x);
 ind = sortperm(x)[end:-1:end-4];
-# Figure
-bar(x, xlims=(0.0, Float64(N+1)), ylims=(0.0,105.), legend=false, tickfont=font(12,"sans-serif"),
-    title="N=$(N), mean="*@sprintf("%.2f",x_mean)*", σ="*@sprintf("%0.2f",x_std), # GRバックエンドの場合はσが正しく表示されない
-    size=(800,600))
-xm = [0.0,Float64(N+1)]; ym = [x_mean, x_mean];
-plot!(xm,ym, line=:solid, c=:green, lab="mean")
-scatter!(ind, x[ind], ms=8., color=:red)
-savefig(joinpath(figdir,"rand_bar.png"));
+
+horz=collect(1:N)
+horz2=collect(-5:N+5)
+m=repmat([x_mean],length(horz2),1)
+stdstr=@sprintf("%0.2f",x_std)
+
+# GMT options
+Bopts="-Bxa10f5 -Bya20f10 -BSWne"
+Jopt="X12"
+Ropt="-1/52/0/105"
+Sopt1="-Sb1u"
+Wopt1="0.2,black"
+
+# figure with GMT
+import GMT
+GMT.xy(Bopts*" "*Sopt1,[horz[:] x[:]], J=Jopt, R=Ropt, G="gray", W=Wopt1)
+GMT.xy!(Bopts*"+tstd=$stdstr",[horz2[:] m[:]], J=Jopt, R=Ropt, W="1,blue")
+GMTprint("rand_hist.ps",dirname=figdir)
