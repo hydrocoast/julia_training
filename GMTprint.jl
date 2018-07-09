@@ -1,7 +1,7 @@
 ################################
 ## Tentative function
 ################################
-function GMTprint(filename="tmp.ps"::String; dirname="."::String)
+function GMTprint(filename="tmp.ps"::String, dirname="."::String)
     if !is_linux()
         println("Not Linux -- nothing to be done")
         return nothing

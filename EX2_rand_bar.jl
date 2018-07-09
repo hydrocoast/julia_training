@@ -27,4 +27,4 @@ Wopt1="0.2,black"
 import GMT
 GMT.xy(Bopts*" "*Sopt1,[horz[:] x[:]], J=Jopt, R=Ropt, G="gray", W=Wopt1)
 GMT.xy!(Bopts*"+tstd=$stdstr",[horz2[:] m[:]], J=Jopt, R=Ropt, W="1,blue")
-GMTprint("rand_hist.ps",dirname=figdir)
+GMTprint("rand_hist.ps", figdir)
