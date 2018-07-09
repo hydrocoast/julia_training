@@ -23,7 +23,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
-N=31
+N=49
 qs = Int64(2);
 L=0.25;
 # create mesh data
@@ -46,7 +46,7 @@ include("./GMTprint.jl")
 crange="-6/8/1"
 # xyz2grd
 xyrange=[xvec[1] xvec[end] yvec[1] yvec[end]]
-Δ=(xvec[end]-xvec[1])/2(N-1)
+Δ=(xvec[end]-xvec[1])/(N-1)
 # pscontour
 afg="-Ba1f1 -Bx+lX-axis -By+lY-axis -BWSne"
 proj="X12/12"
@@ -77,17 +77,18 @@ GMT.gmt("psvelo tmp.txt -J -R -A$optA -Gblack -Se$sc/$conf/0 -P -K -O -V >> $psn
 GMTprint("contour_grad.eps")
 =#
 
+
 #=
 #GMT.surface([xmat[:] ymat[:] ϕ[:]], R=xyrange, I=Δ,G="tmp.grd")
-open( "tmp.txt", "w" ) do fileIO
+open( "tmp0.txt", "w" ) do fileIO
     [@printf(fileIO, "%8.3f %8.3f %12.3e\n",
      xmat[k], ymat[k], ϕ[k]) for k=1:length(ϕ[:])]
 end
 region = join(xyrange,"/")
 
-GMT.gmt("xyz2grd tmp.txt -R$region -Gtmp.grd -I0.2")
-
-
+GMT.gmt("xyz2grd tmp0.txt -R$region -Gtmp.grd -I0.2")
+=#
+#=
 xyzrange="-3/3/-3/3/-8/9"
 zratio="1.0"
 GMT.gmt("makecpt -Crainbow -T$crange -Z -D -N > tmp.cpt")
