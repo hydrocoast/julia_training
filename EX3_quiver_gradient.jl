@@ -59,7 +59,7 @@ open( "tmpscale2.txt", "w" ) do fileIO
     @printf(fileIO,"%0.2f %0.2f %0.2f 0.00 1.0 1.0 1.0 %0.2f",arrowX,arrowY,arrowsc,arrowsc)
 end
 
-# import (not using) in order to avoid conflicts
+# import GMT
 import GMT
 include("./GMTprint.jl")
 

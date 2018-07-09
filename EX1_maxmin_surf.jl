@@ -22,7 +22,7 @@ row_max,col_max = ind2sub(P,ind);
 
 
 
-# import (not using) in order to avoid conflicts
+# import GMT
 import GMT
 include("./GMTprint.jl")
 
