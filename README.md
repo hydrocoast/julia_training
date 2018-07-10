@@ -6,8 +6,8 @@ This repository follows [this page](http://hydrocoast.jp/index.php?Julia).
 This repo contains examples of the codes, which may help you learn JuliaLang.  
 You can make figures and animations as shown below.   
 <img src="https://github.com/hydrocoast/julia_training/blob/master/ConAdvEq.gif" width="640">   
-master branch is designed to make figures with Plots.
-PyPlot is also available by `git checkout pyplot`.   
+The branch `master` is designed to make figures with Plots.  
+PyPlot and GMT5 are also available by `git checkout pyplot` and `git checkout gmt`.   
 Please contact the author if you find a bug.  
 
 # Requirements
@@ -22,6 +22,7 @@ Please contact the author if you find a bug.
 - Plots
 - Polynomials
 - PyPlot
+- GMT (in case of using GMT visualization)
 
 # Usage
 - Install the required packages by `Pkg.add("NameOfThePackage")`   
