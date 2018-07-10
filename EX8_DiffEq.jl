@@ -1,8 +1,5 @@
 # Include packages
 using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
-using Plots
-pyplot()
-clibrary(:misc)
 if !isdefined(:peaks)
     include("peaks.jl")
 end
@@ -21,11 +18,23 @@ end
 ##############
 function SnapShot(xvec::Array{T,1}, yvec::Array{T,1}, D::Array{T,2},
                   titlestr::String) where T<:AbstractFloat
-    surface(xvec,yvec,D,c=(:rainbow),fillalpha=0.9, tickfont=12,
-            xlims=(-3.,3.), ylims=(-3.,3.), zlims=(-8.,10.), clims=(-6.,6.),
-            xlabel="X", ylabel="Y", zlabel="Z", size=(800,600),
-            colorbar=:best, colorbar_title=" ", title=titlestr, titlefont=14,
-            )
+    # params and options
+    proj="X10"
+    afg="-Ba1f1g1 -Bx+lX -By+lY -Bza2f2g1+lZ -BnSEwZ+b+t\"$titlestr\""
+    vw="130/20"
+    zratio="0.5"
+    crange="-6/8/0.1"
+    cbxy="15.5/6.0/11/0.4"
+    cbafg="-Ba2f1"
+
+    Δ=(xvec[end]-xvec[1])/(length(xvec)-1)
+    xyrange=[xvec[1] xvec[end] yvec[1] yvec[end]]
+    xyzrange="-3/3/-3/3/-8/9"
+    # GMT scripts
+    cpt = GMT.gmt("makecpt -Crainbow -T$crange -D")
+    G = GMT.surface([xmat[:] ymat[:] D[:]], R=xyrange, I=Δ)
+    GMT.grdview(afg, G, J=proj, R=xyzrange, Jz=zratio, C=cpt, Q="sm", p=vw)
+    GMT.scale!(cbafg, D=cbxy, C=cpt)
 end
 ##############
 
@@ -96,30 +105,31 @@ for k = 1:nstep
     #@printf("%d, ",k)
 end
 
-# For Animation
-#anim = @animate for k=0:10:nstep
-anim = @animate for k=0:10:nstep
+# Figures & animation
+import GMT
+include("./GMTprint.jl")
+GMT.gmt("set FONT_TITLE 16p")
+GMT.gmt("set MAP_GRID_PEN_PRIMARY thinner,gray,-")
+
+# test initial step
+#k=0; SnapShot(xvec, yvec, P[1:ny,1:nx,1], @sprintf("%6.2f",t[k+1])*" s")
+
+# animation
+if is_linux()
+gifdir="./forgif"
+if !isdir(gifdir); mkdir(gifdir); end
+cnt=0
+for k=0:10:nstep
     @printf("%d, ",k)
     SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-end
-gifname = "./tmp_DiffEq.gif"
-if isfile(gifname); rm(gifname); end
-gif(anim, gifname, fps=10) #save the animation
-
-# Make animation gif when using linux
-#==
-sdirname="./forgif"
-pref="DiffEq-"
-if !isdir(sdirname); mkdir(sdirname); end
-cnt = 0
-for k=0:5:nstep
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-    savefig(sdirname*"/"*pref*@sprintf("%03d",cnt)*".png")
+    tmpname="step"*@sprintf("%03d",cnt)
+    GMTprint(tmpname,gifdir)
+    run(`convert -density 300 $gifdir/$tmpname.eps $gifdir/$tmpname.png`)
     cnt += 1
 end
-if contains(Sys.MACHINE,"linux")
-    run(`ffmpeg -i $sdirname/$pref%03d.png -vf palettegen palette.png -y`)
-    run(`ffmpeg -r 20 -i $sdirname/$pref%03d.png -i palette.png -filter_complex paletteuse DiffEq_sample.gif -y`)
-    run(`rm palette.png`)
+#=
+run(`ffmpeg -i $gifdir/step%03d.png -vf palettegen palette.png -y`)
+run(`ffmpeg -r 10 -i $gifdir/step%03d.png -i palette.png -filter_complex paletteuse ConAdvEq.gif -y`)
+run(`rm palette.png`)
+=#
 end
-==#

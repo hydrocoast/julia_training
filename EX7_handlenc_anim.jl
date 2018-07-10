@@ -1,27 +1,31 @@
 # Include packages
-using Plots
-pyplot()
 using NetCDF
 
 ##############
 ## function(s)
 ##############
 function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
-    # setup for ticks
-    xt = collect(Int64, 0:60:360)
-    xtl = [collect(0:60:180);collect(-120:60:0)]
-    xtl = [@sprintf("%d",xtl[i]) for i=1:length(xtl)]
-    # clibrary
-    clibrary(:misc)
-    # filled contour
-    ## (2018/03 メモ)pyplotバックエンドでは，clims=()の設定は反映されない。なぜ？
-    contour(lon, lat, wspd[:,:,k],fill=true, clims=(0.,16.), color=(:rainbow),
-             size=(800, 400), tickfont=12, axis_ratio=:equal,
-             xlabel="Longitude", ylabel="Latitude", guidefont=12,
-             colorbar_title="(m/s)",
-             title=Dates.format(T[k], "yyyy/mm"), titlefont=14,
-             xticks=(xt, xtl),
-             )
+    psname,_,_ = GMT.fname_out("")
+    titlestr=Dates.format(T[k], "yyyy/mm")
+    # makecpt
+    crange="0/14/1"
+    cbxy="15.8/3.5/7.5/0.4"
+    cafg="-Bxa2f1 -By+l(m/s)"
+    afg="-Bxa60f30 -Bya60f30 -BSWNe+t$titlestr"
+    proj="X15/7.5"
+    region="g0/360/-90/90"
+    #
+    latmat=repmat(lat,1,length(lon))
+    lonmat=repmat(lon',length(lat),1)
+    llrange=[lon[1] lon[end] lat[1] lat[end]]
+    Δ=(lon[end]-lon[1])/(length(lon)-1)
+    # GMT scripts
+    cpt = GMT.gmt("makecpt -Chaxby -T$crange -D")
+    G = GMT.surface([lonmat[:] latmat[:] vec(wspd[:,:,k])], R=llrange, I=Δ)
+    GMT.gmt("psbasemap -J$proj -R$region $afg -P -K > $psname")
+    GMT.grdview!(G, J=proj, R=region, C=cpt, Q="i")
+    GMT.gmt("pscoast -J -R -Dc -Wthinnest,black -P -K -O >> $psname")
+    GMT.scale!(cafg, D=cbxy, C=cpt)
 end
 
 ####################
@@ -50,13 +54,30 @@ torg = ncread(ncfile,"time")
 nt = length(torg);
 T = DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
 
+lat = flipdim(lat,1); wspd=flipdim(wspd,1)
+
 # Figures & animation
-# DrawSnapShot(1, lon, lat, wspd, T) # 1st step
-#if !isdir("./forgif"); mkdir("./forgif"); end
-anim = @animate for k=1:24
-    @printf("%d, ",k)
-    DrawSnapShot(k, lon, lat, wspd, T)
+import GMT
+include("./GMTprint.jl")
+GMT.gmt("set FONT_TITLE 16p")
+
+# test to make figure at initial step
+#DrawSnapShot(1, lon, lat, wspd, T)
+
+# animation
+if is_linux()
+    gifdir="./forgif"
+    if !isdir(gifdir); mkdir(gifdir); end
+    for i=1:24
+        @printf("%d,",i)
+        DrawSnapShot(i, lon, lat, wspd, T)
+        tmpname="time"*@sprintf("%03d",i)
+        GMTprint(tmpname,gifdir)
+        run(`convert -density 300 $gifdir/$tmpname.eps $gifdir/$tmpname.png`)
+    end
+    #=
+    run(`ffmpeg -i $gifdir/time%03d.png -vf palettegen palette.png -y`)
+    run(`ffmpeg -r 3 -i $gifdir/time%03d.png -i palette.png -filter_complex paletteuse MonthlyWspd.gif -y`)
+    run(`rm palette.png`)
+    =#
 end
-gifname = "./tmp_monthlywspd.gif"
-if isfile(gifname); rm(gifname); end
-gif(anim, gifname, fps=4) #save the animation

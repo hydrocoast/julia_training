@@ -11,7 +11,7 @@ function GMTprint(filename="tmp.ps"::String, dirname="."::String)
     #GMT.gmt(psconvert )
     #run(`cp -p $psorg $outpath`)
     run(`cp -p $psorg $outpath`)
-    run(`ps2eps -f $outpath`)
+    run(`ps2eps -f -q $outpath`)
     run(`rm $outpath`)
     return nothing
 end
