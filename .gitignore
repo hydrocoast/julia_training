@@ -6,6 +6,11 @@ forgif/
 *.swp
 *.ipynb
 *.nc
+*.grd
+*.ps
+*.eps
+*.svg
+*.cpt
 *~
 #*#
 tmp*
