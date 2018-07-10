@@ -44,5 +44,5 @@ open( lfile, "w" ) do fileIO
     print(fileIO, "S 0.7 - 0.7 - 1p,tomato,- 1.5 quad to 2100\n")
 end
 GMT.gmt("pslegend -J$proj -R$region -DjBL+w4.75+o0.25 -F+p0.5+gwhite -O -P -V $lfile >> $psname")
-GMTprint("regression.ps", figdir)
 rm(lfile)
+GMTprint("regression.ps", figdir)
