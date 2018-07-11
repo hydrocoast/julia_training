@@ -2,7 +2,7 @@
 Julia traininig course  
 
 # Overview
-This repository follows [this page](http://hydrocoast.jp/index.php?Julia).   
+This repository follows [this page](https://hydrocoast.jp/index.php?Julia).   
 This repo contains examples of the codes, which may help you learn JuliaLang.  
 You can make figures and animations as shown below.   
 <img src="https://github.com/hydrocoast/julia_training/blob/master/ConAdvEq.gif" width="640">   
@@ -41,4 +41,4 @@ MIT
 # Author
 Takuya Miyashita   
 Doctoral student, Kyoto University  
-([personal web site](http://hydrocoast.jp))  
+([personal web site](https://hydrocoast.jp))  
