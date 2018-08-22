@@ -1,17 +1,31 @@
+<<<<<<< HEAD
 if !isdefined(:peaks)
+=======
+# Include packages
+using Plots
+pyplot()
+#gr()
+if !(@isdefined peaks)
+>>>>>>> 33ecb64... support Julia v1.0.0
     include("peaks.jl");
 end
-# gradient function
+
+####################
+## function
+####################
 function grad2d(dataorg::Array{Float64,2})
     ny, nx = size(dataorg);
-    Gy = zeros(ny,nx);
     Gx = zeros(ny,nx);
-    for i = 1:ny
-        Gx[i,:] = gradient(dataorg[i,:]);
-    end
-    for j = 1:nx
-        Gy[:,j] = gradient(dataorg[:,j]);
-    end
+    Gy = zeros(ny,nx);
+
+    diffx = diff(dataorg, dims=2)
+    Gx[:,1], Gx[:,end] = diffx[:,1], diffx[:,end]
+    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1];
+
+    diffy = diff(dataorg, dims=1)
+    Gy[1,:], Gy[end,:] = diffy[1,:], diffy[end,:]
+    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx];
+
     return(Gx, Gy)
 end
 
@@ -22,7 +36,7 @@ end
 figdir = "./fig"
 
 # Parameters
-N=31
+const N=31
 qs = Int64(2);
 L=0.25;
 # create mesh data

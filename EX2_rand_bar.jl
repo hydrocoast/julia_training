@@ -1,10 +1,28 @@
+<<<<<<< HEAD
 ####################
 ## main
 ####################
 N = 50; # the number of vector
+=======
+using Plots
+pyplot()
+#gr()
+#plotlyjs()
+
+using Printf
+import Statistics
+####################
+## main
+####################
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
+const N = 50; # the number of vector
+>>>>>>> 33ecb64... support Julia v1.0.0
 x = 100(rand(N)); #
-x_mean=mean(x);
-x_std=std(x);
+x_mean = Statistics.mean(x);
+x_std = Statistics.std(x);
 ind = sortperm(x)[end:-1:end-4];
 
 # Figure

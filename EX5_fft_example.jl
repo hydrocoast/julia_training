@@ -19,7 +19,6 @@ function fftfreq(nt::Int,dt)
 end
 ##############
 function loadmat()
-    using MAT
     # define the filepath & filename
     fdir = "./data";
     fname = "crf_wind.mat";
@@ -56,6 +55,7 @@ end
 figdir = "./fig"
 
 # Data source mat or txt
+#using MAT
 #dt, nt, nz, z, u = loadmat();
 dt, nt, nz, z, u = loadtxt()
 
@@ -82,7 +82,8 @@ ax1[:grid](which="minor",color="#7D7D7D",linestyle="--",alpha=0.2)
 fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
-F0[cutoff .& .!freq0] = 0.0;
+f!(x,b) = b ? x=0.0 : x=x;
+map!(f!, F0, F0, cutoff .& .!freq0);
 datamod = ifft(F0);
 
 # figure 2

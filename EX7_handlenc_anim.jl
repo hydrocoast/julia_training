@@ -1,7 +1,12 @@
 # Include packages
 using NetCDF
+<<<<<<< HEAD
 using PyPlot, PyCall
 anim = pyimport("matplotlib.animation")
+=======
+using Printf
+import Dates
+>>>>>>> 33ecb64... support Julia v1.0.0
 ##############
 ## functions
 ##############
@@ -57,13 +62,15 @@ end
 # ncinfo(ncfile)
 
 # Get variables
-lon = ncread(ncfile,"lon")
-lat = ncread(ncfile,"lat")
+lon = convert.(Float64, ncread(ncfile,"lon"))
+lat = convert.(Float64, ncread(ncfile,"lat"))
 wspd = permutedims(ncread(ncfile,"wspd"), [2 1 3])
+# convert the order of latitudes, 90:-90 to -90:90
+lat = reverse(lat, dims=1)
+wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
-T = DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
-
+T = Dates.DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
 # Figures & animation
 # figure
 fig = figure(figsize=(9,5))
