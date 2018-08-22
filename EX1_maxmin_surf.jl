@@ -1,4 +1,4 @@
-if !isdefined(:peaks)
+if !(@isdefined peaks)
     include("peaks.jl");
 end
 
@@ -10,15 +10,17 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
-N=31
+const N=31
 xmat, ymat, P = peaks(N);
 xvec = vec(xmat[1,:])
 yvec = vec(ymat[:,1])
 # min & max
 minval, ind = findmin(P);
-row_min,col_min = ind2sub(P,ind);
+cind = CartesianIndices(P)[ind]
+row_min, col_min = cind[1], cind[2];
 maxval, ind = findmax(P);
-row_max,col_max = ind2sub(P,ind);
+cind = CartesianIndices(P)[ind]
+row_max, col_max = cind[1], cind[2];
 
 
 
@@ -57,7 +59,7 @@ cbxy="15.5/5.5/11/0.4"
 cbafg="-Ba2f1 -By+lZ"
 
 ## psxyzに該当するものがない？
-#psname,_,_ = GMT.fname_out("ps")
+#psname,_,_ = GMT.fname_out(Dict())
 #medge="-W0.1,black"
 #msize="-Sc0.25"
 #markermin=string([xvec[col_min] yvec[row_min] minval])

@@ -1,18 +1,19 @@
 # Include packages
 using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
-if !isdefined(:peaks)
+if !(@isdefined peaks)
     include("peaks.jl")
 end
+using Printf
 ##############
 ## functions
 ##############
 function OpenBoundAll!(D::Array{T,2}, mgn::Int,
                        IS::Int, IE::Int, JS::Int, JE::Int,
                        ny::Int, nx::Int) where T<:AbstractFloat
-    D[IS+mgn:0+mgn   ,1+mgn:nx+mgn] = repmat(D[1+mgn ,1+mgn:nx+mgn],mgn,1) # Northern
-    D[ny+1+mgn:IE+mgn,1+mgn:nx+mgn] = repmat(D[ny+mgn,1+mgn:nx+mgn],mgn,1) # Southern
-    D[IS+mgn:IE+mgn,   JS+mgn:0+mgn] = repmat(D[IS+mgn:IE+mgn, 1+mgn],1,mgn) # Western
-    D[IS+mgn:IE+mgn,nx+1+mgn:JE+mgn] = repmat(D[IS+mgn:IE+mgn,nx+mgn],1,mgn) # Eastern
+    D[IS+mgn:0+mgn   ,1+mgn:nx+mgn] = repeat(D[1+mgn ,1+mgn:nx+mgn], outer=(mgn,1)) # Northern
+    D[ny+1+mgn:IE+mgn,1+mgn:nx+mgn] = repeat(D[ny+mgn,1+mgn:nx+mgn], outer=(mgn,1)) # Southern
+    D[IS+mgn:IE+mgn,   JS+mgn:0+mgn] = repeat(D[IS+mgn:IE+mgn, 1+mgn], outer=(1,mgn)) # Western
+    D[IS+mgn:IE+mgn,nx+1+mgn:JE+mgn] = repeat(D[IS+mgn:IE+mgn,nx+mgn], outer=(1,mgn)) # Eastern
     return D
 end
 ##############
@@ -34,7 +35,7 @@ function SnapShot(xvec::Array{T,1}, yvec::Array{T,1}, D::Array{T,2},
     cpt = GMT.gmt("makecpt -Crainbow -T$crange -D")
     G = GMT.surface([xmat[:] ymat[:] D[:]], R=xyrange, I=Δ)
     GMT.grdview(afg, G, J=proj, R=xyzrange, Jz=zratio, C=cpt, Q="sm", p=vw)
-    GMT.scale!(cbafg, D=cbxy, C=cpt)
+    #GMT.scale!(cbafg, D=cbxy, C=cpt)
 end
 ##############
 
@@ -43,7 +44,7 @@ end
 ####################
 
 # Parameters
-N=31
+const N=31
 nx = ny = N
 xmat, ymat, P0 = peaks(N);
 xvec = vec(xmat[1,:])
@@ -68,7 +69,7 @@ mgn = 1;
 IS = JS = 1-mgn;
 IE = ny + mgn;
 JE = nx + mgn;
-P = OffsetArray(Float64, IS:IE, JS:JE, 0:nstep);
+P = OffsetArray{Float64}(undef, IS:IE, JS:JE, 0:nstep)
 # Initial condition t=0
 P[1:ny,1:nx,0] = copy(P0)
 
@@ -79,7 +80,7 @@ P[IS:IE,JS:JE,0] = OpenBoundAll!(P[IS:IE,JS:JE,0],mgn, IS,IE,JS,JE,ny,nx)
 
 # Calculation
 for k = 1:nstep
-    P0 = OffsetArray(Float64, IS:IE, JS:JE)
+    P0 = OffsetArray{Float64}(undef, IS:IE, JS:JE)
     P0[IS:IE,JS:JE] = P[IS:IE,JS:JE,k-1]
     P1 = zeros(ny,nx)
     for i = 1:ny
@@ -115,21 +116,19 @@ GMT.gmt("set MAP_GRID_PEN_PRIMARY thinner,gray,-")
 #k=0; SnapShot(xvec, yvec, P[1:ny,1:nx,1], @sprintf("%6.2f",t[k+1])*" s")
 
 # animation
-if is_linux()
-gifdir="./forgif"
-if !isdir(gifdir); mkdir(gifdir); end
-cnt=0
-for k=0:10:nstep
-    @printf("%d, ",k)
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-    tmpname="step"*@sprintf("%03d",cnt)
-    GMTprint(tmpname,gifdir)
-    run(`convert -density 300 $gifdir/$tmpname.eps $gifdir/$tmpname.png`)
-    cnt += 1
-end
-#=
-run(`ffmpeg -i $gifdir/step%03d.png -vf palettegen palette.png -y`)
-run(`ffmpeg -r 10 -i $gifdir/step%03d.png -i palette.png -filter_complex paletteuse ConAdvEq.gif -y`)
-run(`rm palette.png`)
-=#
+if Sys.islinux()
+    gifdir="./forgif"
+    if !isdir(gifdir); mkdir(gifdir); end
+    for k=0:10:nstep
+        @printf("%d, ",k)
+        SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
+        tmpname="step"*@sprintf("%03d",Int(k/10))
+        GMTprint(tmpname,gifdir)
+        run(`convert -density 300 $gifdir/$tmpname.eps $gifdir/$tmpname.png`)
+    end
+    #=
+    run(`ffmpeg -i $gifdir/step%03d.png -vf palettegen palette.png -y`)
+    run(`ffmpeg -r 10 -i $gifdir/step%03d.png -i palette.png -filter_complex paletteuse ConAdvEq.gif -y`)
+    run(`rm palette.png`)
+    =#
 end

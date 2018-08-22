@@ -1,13 +1,15 @@
 # Include packages
 using Polynomials, Interpolations, DSP
-# ※Q5のようにFFTを使っても良いが，前回と同じパッケージを利用するのも面白くないので，ここでは DSPを使用する
+using Printf
+import DelimitedFiles
+import Dates
 
 # function
 function loadcsvsample()
     # define the filepath & filename
     fdir = "./data"
     fname = "dat_climate.csv"
-    dataorg = readcsv(join([fdir,fname],"/"), skipstart=1)
+    dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname), ',', skipstart=1)
     return dataorg
 end
 
@@ -20,7 +22,7 @@ if !isdir(figdir); mkdir(figdir); end
 
 # read csv data
 dataorg = loadcsvsample()
-torg = DateTime.(dataorg[:,1], "yyyy/mm/dd HH:MM")
+torg = Dates.DateTime.(dataorg[:,1], "yyyy/mm/dd HH:MM")
 tsecorg = convert.(Float64, Dates.value.((torg-torg[1])/1000)) # ms to s
 V = convert.(Float64, dataorg[:,2])
 dataorg = nothing
@@ -37,7 +39,7 @@ lin_p = polyfit(tsec, Vint, 1)
 # power spectral
 # (注)360*2は結果を合わせにいった値のため根拠なし
 pdg = welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
-days = 1./convert.(Float64, pdg.freq)
+days = 1.0./convert.(Float64, pdg.freq)
 PSD = pdg.power
 maxval, Tc = findmax(PSD[2:end])
 
@@ -47,12 +49,12 @@ tx = Dates.format.(t,"YYYY-mm-dd")
 
 import GMT
 include("./GMTprint.jl")
-psname,_,_ = GMT.fname_out("")
+psname,_,_ = GMT.fname_out(Dict())
 
 # Appearances
 proj="X14"
 region="2011-7-1T/2017-1-1T/62/72"
-axes="-Bsxg3O -Bpxa1Yg1Y+lYear -By2g2 -BSW+ggray90"
+Baxes="-Bsxg3O -Bpxa1Yg1Y+lYear -By2g2 -BSW+ggray90"
 pen1="-W0.5,orange"
 pen2="-W0.5,skyblue"
 
@@ -77,7 +79,7 @@ GMT.gmt("set MAP_GRID_PEN_PRIMARY thinner,gray,-")
 GMT.gmt("set MAP_GRID_PEN_SECONDARY thinner,gray,-")
 
 # GMT scripts
-GMT.gmt("psbasemap -J$proj -R$region $axes -K -P -V > $psname")
+GMT.gmt("psbasemap -J$proj -R$region $Baxes -K -P -V > $psname")
 GMT.gmt("psxy -J -R $pen1 -P -K -V -O tmp1.txt >> $psname")
 GMT.gmt("psxy -J -R $pen2 -P -K -V -O tmp2.txt >> $psname")
 GMT.gmt("pslegend -J -R -DjTL+w5.5+o0.2/0.2 -F+p0.5+gwhite -O -P -V $lfile >> $psname")
@@ -88,7 +90,7 @@ GMTprint("dayly.ps",figdir)
 # Appearances
 proj="X15l/10"
 region="1e+0/2e+3/-30/600"
-axes="-Bxa1pg1+lDay -Bya100f100g100 -BSWne+ggray95"
+Baxes="-Bxa1pg1+lDay -Bya100f100g100 -BSWne+ggray95"
 pen1="-W0.5,blue"
 lfile="tmplegend.txt"
 msize="c0.25"
@@ -101,11 +103,11 @@ open( lfile, "w" ) do fileIO
 end
 
 # GMT scripts
-GMT.gmt("psbasemap -J$proj -R$region $axes -K -P -V > $psname")
+GMT.gmt("psbasemap -J$proj -R$region $Baxes -K -P -V > $psname")
 GMT.xy!(pen1, [days[2:end] PSD[2:end]], J=proj, R=region)
 GMT.xy!(pen2, [days[Tc+1] PSD[Tc+1]], J=proj, R=region, G=mfc, S=msize)
 GMT.gmt("pslegend -J -R -DjTL+w5.5+o0.2/0.2 -F+p0.5+gwhite -O -P -V $lfile >> $psname")
 GMTprint("trend.ps",figdir)
 
 # remove temporary files
-rm.(filter(x->ismatch(r"tmp*\.*",x), readdir()))
+rm.(filter(x->occursin(r"tmp*\.*",x), readdir()))

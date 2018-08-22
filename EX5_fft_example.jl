@@ -19,7 +19,6 @@ function fftfreq(nt::Int,dt)
 end
 ##############
 function loadmat()
-    using MAT
     # define the filepath & filename
     fdir = "./data";
     fname = "crf_wind.mat";
@@ -57,6 +56,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # Data source mat or txt
+#using MAT
 #dt, nt, nz, z, u = loadmat();
 dt, nt, nz, z, u = loadtxt()
 
@@ -70,16 +70,16 @@ if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end
 
 import GMT
 include("./GMTprint.jl")
-psname,_,_ = GMT.fname_out("")
+psname,_,_ = GMT.fname_out(Dict())
 
 # figure 1
 proj="X12l/10l"
 region="2e-4/1e+1/1e-4/2e+0"
-axes="-Bsg3 -Bpxa1g1p+l\"Frequency (Hz)\" -Bpya1g1p+l\"Power (m@+2@+/s@+2@+)\" -BSWne"
-axes2="--MAP_GRID_PEN_PRIMARY=thinner,black --MAP_GRID_PEN_SECONDARY=thinner,gray,-"
+Baxes="-Bsg3 -Bpxa1g1p+l\"Frequency (Hz)\" -Bpya1g1p+l\"Power (m@+2@+/s@+2@+)\" -BSWne"
+Baxes2="--MAP_GRID_PEN_PRIMARY=thinner,black --MAP_GRID_PEN_SECONDARY=thinner,gray,-"
 pen="-W0.25,blue"
 # GMT plot
-GMT.gmt("psbasemap -J$proj -R$region $axes $axes2 -K -P -V > $psname")
+GMT.gmt("psbasemap -J$proj -R$region $Baxes $Baxes2 -K -P -V > $psname")
 GMT.xy!(pen,[freq[2:nt2] P[2:nt2]],J=proj,R=region)
 # save the figure
 GMTprint("PSD.ps",figdir)
@@ -88,7 +88,8 @@ GMTprint("PSD.ps",figdir)
 fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
-F0[cutoff .& .!freq0] = 0.0;
+f!(x,b) = b ? x=0.0 : x=x;
+map!(f!, F0, F0, cutoff .& .!freq0);
 datamod = ifft(F0);
 
 # figure 2
@@ -97,13 +98,13 @@ t = 0:dt:(nt-1)*dt # time: x-axis
 # Appearances
 proj="X16/8"
 region="0/2600/0/70"
-axes="-Bx500g500+l\"Time (s)\" -By10g10+l\"Wind speed (m/s)\" -BSW"
-axes2="--MAP_GRID_PEN_PRIMARY=thinner,gray"
+Baxes="-Bx500g500+l\"Time (s)\" -By10g10+l\"Wind speed (m/s)\" -BSW"
+Baxes2="--MAP_GRID_PEN_PRIMARY=thinner,gray"
 pen="-W0.25,skyblue"
 pen2="-W0.5,plum"
 
 # GMT plot
-GMT.gmt("psbasemap -J$proj -R$region $axes $axes2 -K -P -V > $psname")
+GMT.gmt("psbasemap -J$proj -R$region $Baxes $Baxes2 -K -P -V > $psname")
 GMT.xy!(pen, [collect(t) data], J=proj, R=region)
 GMT.xy!(pen2, [collect(t) real.(datamod)], J=proj, R=region)
 # GMT legend

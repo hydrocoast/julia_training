@@ -1,17 +1,23 @@
-if !isdefined(:peaks)
+if !(@isdefined peaks)
     include("peaks.jl");
 end
-# gradient function
+
+####################
+## function
+####################
 function grad2d(dataorg::Array{Float64,2})
     ny, nx = size(dataorg);
-    Gy = zeros(ny,nx);
     Gx = zeros(ny,nx);
-    for i = 1:ny
-        Gx[i,:] = gradient(dataorg[i,:]);
-    end
-    for j = 1:nx
-        Gy[:,j] = gradient(dataorg[:,j]);
-    end
+    Gy = zeros(ny,nx);
+
+    diffx = diff(dataorg, dims=2)
+    Gx[:,1], Gx[:,end] = diffx[:,1], diffx[:,end]
+    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1];
+
+    diffy = diff(dataorg, dims=1)
+    Gy[1,:], Gy[end,:] = diffy[1,:], diffy[end,:]
+    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx];
+
     return(Gx, Gy)
 end
 
@@ -23,7 +29,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
-N=49
+const N=49
 qs = Int64(2);
 L=0.25;
 # create mesh data
@@ -83,7 +89,7 @@ sc="0.4"
 # GMT commands
 cpt = GMT.gmt("makecpt -Crainbow -T$crange -D")
 G = GMT.surface([xmat[:] ymat[:] ϕ[:]], R=xyrange, I=Δ)
-psname,_,_ = GMT.fname_out("")
+psname,_,_ = GMT.fname_out(Dict())
 
 # contours and gradient
 GMT.grdcontour(afg, G, J=proj, R=xyrange, color=cpt, W="+c")
@@ -99,8 +105,8 @@ GMT.grdview(afg, G, J=proj, R=xyrange, C=cpt, Q="i")
 GMT.grdcontour!(G, J=proj, R=xyrange,C=1, A=2,L="-6/8")
 GMT.gmt("psvelo tmp2.txt -J -R -A$optA -Gblack -Se$sc/0/0 -P -K -O -V >> $psname")
 GMT.gmt("psvelo tmpscale2.txt -J -R -A$optA -Gblack -Se$sc/0/12 -P -K -O -V >> $psname")
-GMT.scale!("-Ba2f1", D="12.5/6/12/0.4", C=cpt)
+#GMT.scale!("-Ba2f1", D="12.5/6/12/0.4", C=cpt)
 GMTprint("filled_contour.ps", figdir)
 
 # remove temporary files
-rm.(filter(x->ismatch(r"tmp*\.*",x), readdir()))
+rm.(filter(x->occursin(r"tmp*\.*",x), readdir()))

@@ -1,4 +1,5 @@
 using Polynomials
+import DelimitedFiles
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
@@ -7,7 +8,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # load ascii file
-dataorg = readdlm(join([fdir,fname],"/"))
+dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname))
 years = dataorg[:,1]
 wind = dataorg[:,2]
 stdval = dataorg[:,3]
@@ -19,7 +20,7 @@ years_ext = years[end]:2100.0
 # import GMT
 import GMT
 include("./GMTprint.jl")
-psname,_,_ = GMT.fname_out("")
+psname,_,_ = GMT.fname_out(Dict())
 
 afg="-Bxa20f10+lYear -Bya0.4f0.20+l\"Wind speed (m/s)\" -BSWne"
 region="1940/2105/4.2/6.2"

@@ -1,3 +1,5 @@
+using Printf
+import Statistics
 ####################
 ## main
 ####################
@@ -5,15 +7,15 @@
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
-N = 50; # the number of vector
+const N = 50; # the number of vector
 x = 100(rand(N)); #
-x_mean=mean(x);
-x_std=std(x);
+x_mean = Statistics.mean(x);
+x_std = Statistics.std(x);
 ind = sortperm(x)[end:-1:end-4];
 
 horz=collect(1:N)
 horz2=collect(-5:N+5)
-m=repmat([x_mean],length(horz2),1)
+m=repeat([x_mean], outer=(length(horz2),1))
 stdstr=@sprintf("%0.2f",x_std)
 
 # GMT options

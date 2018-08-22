@@ -1,11 +1,12 @@
 # Include packages
 using NetCDF
-
+using Printf
+import Dates
 ##############
 ## function(s)
 ##############
-function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
-    psname,_,_ = GMT.fname_out("")
+function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{Dates.DateTime,1})
+    psname,_,_ = GMT.fname_out(Dict())
     titlestr=Dates.format(T[k], "yyyy/mm")
     # makecpt
     crange="0/14/1"
@@ -15,8 +16,8 @@ function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
     proj="X15/7.5"
     region="g0/360/-90/90"
     #
-    latmat=repmat(lat,1,length(lon))
-    lonmat=repmat(lon',length(lat),1)
+    latmat=repeat(lat, outer=(1,length(lon)))
+    lonmat=repeat(lon', outer=(length(lat),1))
     llrange=[lon[1] lon[end] lat[1] lat[end]]
     Δ=(lon[end]-lon[1])/(length(lon)-1)
     # GMT scripts
@@ -25,7 +26,7 @@ function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
     GMT.gmt("psbasemap -J$proj -R$region $afg -P -K > $psname")
     GMT.grdview!(G, J=proj, R=region, C=cpt, Q="i")
     GMT.gmt("pscoast -J -R -Dc -Wthinnest,black -P -K -O >> $psname")
-    GMT.scale!(cafg, D=cbxy, C=cpt)
+    #GMT.scale!(cafg, D=cbxy, C=cpt)
 end
 
 ####################
@@ -47,15 +48,15 @@ end
 # ncinfo(ncfile)
 
 # Get variables
-lon = ncread(ncfile,"lon")
-lat = ncread(ncfile,"lat")
+lon = convert.(Float64, ncread(ncfile,"lon"))
+lat = convert.(Float64, ncread(ncfile,"lat"))
 wspd = permutedims(ncread(ncfile,"wspd"), [2 1 3])
+# convert the order of latitudes, 90:-90 to -90:90
+lat = reverse(lat, dims=1)
+wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
-T = DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
-
-lat = flipdim(lat,1); wspd=flipdim(wspd,1)
-
+T = Dates.DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
 # Figures & animation
 import GMT
 include("./GMTprint.jl")
@@ -65,7 +66,7 @@ GMT.gmt("set FONT_TITLE 16p")
 #DrawSnapShot(1, lon, lat, wspd, T)
 
 # animation
-if is_linux()
+if Sys.islinux()
     gifdir="./forgif"
     if !isdir(gifdir); mkdir(gifdir); end
     for i=1:24
