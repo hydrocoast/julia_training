@@ -17,8 +17,8 @@ ind = sortperm(x)[end:-1:end-4];
 using PyPlot
 fig = figure()
 ax = fig[:add_subplot](111)
-#ax[:bar](linspace(1,N,50), x, align="center")
-ax[:bar](linspace(1,N,50), x) #綺麗にセンタリングされない？
+#ax[:bar](LinRange(1,N,50), x, align="center")
+ax[:bar](LinRange(1,N,50), x) #綺麗にセンタリングされない？
 ax[:plot]([0,N+1], [x_mean,x_mean],"-",color="#00ff00",lw=2.0) # ","([x1,x2] [y2,y2]) are necessary
 ax[:scatter](ind, x[ind], marker="o", s=25) # Top 5
 ax[:set_xlim](0,N+1)

@@ -46,7 +46,7 @@ maxval, Tc = findmax(PSD[2:end])
 # ticklabel format
 xt = collect(Dates.DateTime(2012):Dates.Year(1):Dates.DateTime(2017))
 xtl = Dates.format.(xt, Dates.DateFormat("Y"))
-xt = Dates.value.(xt);
+#xt = Dates.value.(xt);
 
 # Figure 1
 using PyPlot
@@ -54,7 +54,7 @@ fig1 = figure()
 ax1 = fig1[:add_subplot](111)
 ax1[:plot](t,Vint,"r-")
 ax1[:plot](t,polyval(lin_p,tsec),"b-")
-ax1[:set_xlim](xt[1]-Dates.Day(round(0.3*365)), xt[end])
+ax1[:set_xlim](xt[1]-Dates.Day(100), xt[end])
 ax1[:xaxis][:set_ticks](xt)
 ax1[:xaxis][:set_ticklabels](xtl)
 ax1[:grid](which="major",ls="-",alpha=0.5)

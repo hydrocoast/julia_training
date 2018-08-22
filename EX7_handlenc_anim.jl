@@ -24,7 +24,7 @@ end
 ##############
 function SetColorbar(fig::PyPlot.Figure, PC::PyCall.PyObject)
     PC[:set_clim](0., 16.)
-    cbar = fig[:colorbar](PC, ticks=linspace(0.,16.,9))
+    cbar = fig[:colorbar](PC, ticks=LinRange(0.,16.,9))
     cbar[:ax][:set_ylabel]("mean wind speed (m/s)", fontsize=14)
 end
 ##############

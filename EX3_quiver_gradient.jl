@@ -57,7 +57,7 @@ ax1[:axis]("scaled")
 # filled contour
 fig2 = figure()
 ax2 = fig2[:add_subplot](111)
-CS2 = ax2[:contourf](xmat, ymat, ϕ, linspace(-6,8,nContour+1), extend="both", cmap="jet")
+CS2 = ax2[:contourf](xmat, ymat, ϕ, LinRange(-6,8,nContour+1), extend="both", cmap="jet")
 cbar = fig2[:colorbar](CS2)
 cbar[:ax][:set_xlabel]("Z", fontsize=12)
 Q = ax2[:quiver](xmat[1:qs:end,1:qs:end], ymat[1:qs:end,1:qs:end],
