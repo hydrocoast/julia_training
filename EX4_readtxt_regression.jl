@@ -4,6 +4,7 @@ pyplot()
 #gr()
 #plotlyjs()
 using Polynomials
+import DelimitedFiles
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
@@ -12,7 +13,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # load ascii file
-dataorg = readdlm(join([fdir,fname],"/"))
+dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname))
 years = dataorg[:,1]
 wind = dataorg[:,2]
 stdval = dataorg[:,3]

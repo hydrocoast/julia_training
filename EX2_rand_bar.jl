@@ -3,6 +3,8 @@ pyplot()
 #gr()
 #plotlyjs()
 
+using Printf
+import Statistics
 ####################
 ## main
 ####################
@@ -10,10 +12,10 @@ pyplot()
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
-N = 50; # the number of vector
+const N = 50; # the number of vector
 x = 100(rand(N)); #
-x_mean=mean(x);
-x_std=std(x);
+x_mean = Statistics.mean(x);
+x_std = Statistics.std(x);
 ind = sortperm(x)[end:-1:end-4];
 # Figure
 bar(x, xlims=(0.0, Float64(N+1)), ylims=(0.0,105.), legend=false, tickfont=font(12,"sans-serif"),
