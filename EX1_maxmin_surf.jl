@@ -1,13 +1,4 @@
-<<<<<<< HEAD
-if !isdefined(:peaks)
-=======
-#if !isdefined(:Plots)
-    using Plots
-    pyplot()
-    #gr()
-#end
 if !(@isdefined peaks)
->>>>>>> 33ecb64... support Julia v1.0.0
     include("peaks.jl");
 end
 

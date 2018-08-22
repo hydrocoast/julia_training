@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-if !isdefined(:peaks)
-=======
-# Include packages
-using Plots
-pyplot()
-#gr()
 if !(@isdefined peaks)
->>>>>>> 33ecb64... support Julia v1.0.0
     include("peaks.jl");
 end
 

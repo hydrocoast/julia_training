@@ -1,15 +1,8 @@
 # Include packages
 using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
-<<<<<<< HEAD
 using PyPlot, PyCall
 anim = pyimport("matplotlib.animation")
-if !isdefined(:peaks)
-=======
-using Plots
-pyplot()
-clibrary(:misc)
 if !(@isdefined peaks)
->>>>>>> 33ecb64... support Julia v1.0.0
     include("peaks.jl")
 end
 using Printf

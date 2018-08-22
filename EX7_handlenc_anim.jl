@@ -1,12 +1,9 @@
 # Include packages
 using NetCDF
-<<<<<<< HEAD
 using PyPlot, PyCall
 anim = pyimport("matplotlib.animation")
-=======
 using Printf
 import Dates
->>>>>>> 33ecb64... support Julia v1.0.0
 ##############
 ## functions
 ##############
