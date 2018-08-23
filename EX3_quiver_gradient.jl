@@ -1,7 +1,8 @@
-# Include packages
 using Plots
 pyplot()
 #gr()
+
+# Include packages
 if !(@isdefined peaks)
     include("peaks.jl");
 end

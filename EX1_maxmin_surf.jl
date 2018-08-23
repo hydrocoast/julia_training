@@ -1,8 +1,7 @@
-#if !isdefined(:Plots)
-    using Plots
-    pyplot()
-    #gr()
-#end
+using Plots
+pyplot()
+#gr()
+
 if !(@isdefined peaks)
     include("peaks.jl");
 end
@@ -36,7 +35,7 @@ contour(xvec, yvec, P, c=(:rainbow), fill=false, tickfont=12,
 scatter!([xvec[col_min]], [yvec[row_min]], ms=10., color=:yellow, lab="min")
 scatter!([xvec[col_max]], [yvec[row_max]], ms=10., color=:magenta, lab="max",
          legendfont=12,legend=:bottomleft, size=(800,600))
-savefig(joinpath(figdir,"contour_2d.png"));  # save figure
+#savefig(joinpath(figdir,"contour_2d.png"));  # save figure
 
 # Three dimensional surface plot
 # plot(..., linetype=:surface) , or surface(...)
@@ -47,4 +46,4 @@ surface(xvec,yvec,P,c=(:rainbow),fillalpha=0.9, tickfont=12,
 scatter!([xvec[col_min]], [yvec[row_min]], [minval], ms=8., color=:yellow, lab="min")
 scatter!([xvec[col_max]], [yvec[row_max]], [maxval], ms=8., color=:magenta, lab="max",
          legendfont=12, legend=:bottomleft)
-savefig(joinpath(figdir,"surface_3d.png")); # save figure
+#savefig(joinpath(figdir,"surface_3d.png")); # save figure

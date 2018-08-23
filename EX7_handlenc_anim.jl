@@ -1,13 +1,15 @@
-# Include packages
 using Plots
 pyplot()
+
+# Include packages
 using NetCDF
 using Printf
 import Dates
+
 ##############
 ## function(s)
 ##############
-function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
+function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{Dates.DateTime,1})
     # setup for ticks
     xt = collect(Int64, 0:60:360)
     xtl = [collect(0:60:180);collect(-120:60:0)]

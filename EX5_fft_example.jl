@@ -1,8 +1,11 @@
 # Include packages
-using FFTW, Plots
+using Plots
 pyplot()
 #gr()
 #plotlyjs()
+
+using FFTW
+
 ##############
 ## functions
 ##############

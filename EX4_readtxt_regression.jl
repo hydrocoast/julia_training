@@ -1,8 +1,9 @@
-# Include packages
 using Plots
 pyplot()
 #gr()
 #plotlyjs()
+
+# Include packages
 using Polynomials
 import DelimitedFiles
 # define the filepath & filename

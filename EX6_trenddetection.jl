@@ -1,12 +1,14 @@
-# Include packages
-using Polynomials, Interpolations, DSP
 using Plots
 pyplot()
 #gr()
 #plotlyjs()
+
+# Include packages
+using Polynomials, Interpolations, DSP
 using Printf
 import DelimitedFiles
 import Dates
+
 # function
 function loadcsvsample()
     # define the filepath & filename

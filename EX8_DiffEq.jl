@@ -1,8 +1,9 @@
-# Include packages
-using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
 using Plots
 pyplot()
 clibrary(:misc)
+
+# Include packages
+using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
 if !(@isdefined peaks)
     include("peaks.jl")
 end
@@ -98,7 +99,6 @@ for k = 1:nstep
 end
 
 # For Animation
-#anim = @animate for k=0:10:nstep
 anim = @animate for k=0:10:nstep
     @printf("%d, ",k)
     SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
@@ -106,21 +106,3 @@ end
 gifname = "./tmp_DiffEq.gif"
 if isfile(gifname); rm(gifname); end
 gif(anim, gifname, fps=10) #save the animation
-
-# Make animation gif when using linux
-#==
-sdirname="./forgif"
-pref="DiffEq-"
-if !isdir(sdirname); mkdir(sdirname); end
-cnt = 0
-for k=0:5:nstep
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-    savefig(sdirname*"/"*pref*@sprintf("%03d",cnt)*".png")
-    cnt += 1
-end
-if contains(Sys.MACHINE,"linux")
-    run(`ffmpeg -i $sdirname/$pref%03d.png -vf palettegen palette.png -y`)
-    run(`ffmpeg -r 20 -i $sdirname/$pref%03d.png -i palette.png -filter_complex paletteuse DiffEq_sample.gif -y`)
-    run(`rm palette.png`)
-end
-==#
