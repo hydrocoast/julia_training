@@ -43,9 +43,9 @@ msize="c0.25"
 cpt = GMT.makecpt(C="rainbow",T=crange,N=1)
 G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
 GMT.grdcontour(afg, G, J=proj, R=xyrange, color=cpt, W="+c")
-GMT.xy!(afg*" "*medge, [xvec[col_min] yvec[row_min]], J=proj, R=xyrange, S=msize,G="blue")
-GMT.xy!(afg*" "*medge, [xvec[col_max] yvec[row_max]], J=proj, R=xyrange, S=msize,G="orange")
-GMTprint("contour.ps",dirname=figdir)
+GMT.xy!("-JX -R "*medge, [xvec[col_min] yvec[row_min]], S=msize,G="blue")
+GMT.xy!("-JX -R "*medge, [xvec[col_max] yvec[row_max]], S=msize,G="orange")
+GMTprint("contour.ps",figdir)
 
 # Three dimensional surface plot
 # params and options
@@ -71,5 +71,5 @@ cbafg="-Ba2f1 -By+lZ"
 cpt = GMT.gmt("makecpt -Crainbow -T$crange -Z -D -N")
 G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
 GMT.grdview(afg, G, J=proj, R=xyzrange, Jz=zratio, C=cpt, Q="sm", p=vw)
-GMT.scale!(cbafg, D=cbxy, C=cpt)
+GMT.colorbar!(cbafg, D=cbxy, C=cpt)
 GMTprint("surface3D.ps",figdir)
