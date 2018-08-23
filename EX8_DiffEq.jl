@@ -1,11 +1,13 @@
-# Include packages
-using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
 using PyPlot, PyCall
 anim = pyimport("matplotlib.animation")
+
+# Include packages
+using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
 if !(@isdefined peaks)
     include("peaks.jl")
 end
 using Printf
+
 ##############
 ## functions
 ##############

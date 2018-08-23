@@ -1,6 +1,7 @@
 # Include packages
 using Polynomials
 import DelimitedFiles
+
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"

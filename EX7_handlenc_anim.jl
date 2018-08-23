@@ -1,9 +1,11 @@
-# Include packages
-using NetCDF
 using PyPlot, PyCall
 anim = pyimport("matplotlib.animation")
+
+# Include packages
+using NetCDF
 using Printf
 import Dates
+
 ##############
 ## functions
 ##############

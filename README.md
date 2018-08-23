@@ -5,13 +5,13 @@ Julia traininig course
 This repository follows [this page](https://hydrocoast.jp/index.php?Julia).   
 This repo contains examples of the codes, which may help you learn JuliaLang.  
 You can make figures and animations as shown below.   
-<img src="https://github.com/hydrocoast/julia_training/blob/master/ConAdvEq.gif" width="640">   
+<img src="https://github.com/hydrocoast/julia_training/blob/pyplot/ConAdvEq.gif" width="640">   
 The branch `master` is designed to make figures with Plots.  
-PyPlot and GMT5 are also available by `git checkout pyplot` and `git checkout gmt`.   
+PyPlot and GMT are also available by `git checkout pyplot` and `git checkout gmt`.   
 Please contact the author if you find a bug.  
 
 # Requirements
-- Julia (>=0.6.2)
+- Julia v1.0.0
 ### Julia Packages
 - DSP
 - FFTW
@@ -25,7 +25,7 @@ Please contact the author if you find a bug.
 - GMT (in case of using GMT visualization)
 
 # Usage
-- Install the required packages by `Pkg.add("NameOfThePackage")`   
+- Install the required packages   
 - Clone this repository
 ```bash
 git clone https://github.com/hydrocoast/julia_training
