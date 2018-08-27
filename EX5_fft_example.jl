@@ -88,8 +88,7 @@ GMTprint("PSD.ps",figdir)
 fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
-f!(x,b) = b ? x=0.0 : x=x;
-map!(f!, F0, F0, cutoff .& .!freq0);
+F0[cutoff .& .!freq0] .= 0.0
 datamod = ifft(F0);
 
 # figure 2
