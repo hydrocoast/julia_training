@@ -1,6 +1,8 @@
 # Include packages
-using Polynomials, Interpolations, DSP
+using Interpolations
 using Printf
+using Polynomials
+import DSP
 import DelimitedFiles
 import Dates
 
@@ -35,10 +37,10 @@ itp = interpolate((tsecorg, ), V, Gridded(Linear()))
 #itp = interpolate((tsecorg, ), V, Gridded(Constant()))
 Vint = itp[tsec]
 # regression
-lin_p = polyfit(tsec, Vint, 1)
+lin_p = Polynomials.polyfit(tsec, Vint, 1)
 # power spectral
 # (注)360*2は結果を合わせにいった値のため根拠なし
-pdg = welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
+pdg = DSP.welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
 days = 1.0./convert.(Float64, pdg.freq)
 PSD = pdg.power
 maxval, Tc = findmax(PSD[2:end])
