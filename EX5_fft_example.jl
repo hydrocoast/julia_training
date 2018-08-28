@@ -1,5 +1,6 @@
 # Include packages
-using FFTW
+import FFTW
+
 ##############
 ## functions
 ##############
@@ -62,7 +63,7 @@ dt, nt, nz, z, u = loadtxt()
 
 # Fourier transform
 data = u[1,:];
-F0 = fft(data,1);
+F0 = FFTW.fft(data,1);
 P = abs.(F0/(nt/2)); # Power
 freq = fftfreq(nt,dt);
 # figure: Power spectrum density
@@ -89,7 +90,8 @@ fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
 F0[cutoff .& .!freq0] .= 0.0
-datamod = ifft(F0);
+<<<<<<< HEAD
+datamod = FFTW.ifft(F0);
 
 # figure 2
 t = 0:dt:(nt-1)*dt # time: x-axis
