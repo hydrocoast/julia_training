@@ -66,6 +66,14 @@ F0 = FFTW.fft(data,1);
 P = abs.(F0/(nt/2)); # Power
 freq = fftfreq(nt,dt);
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end
+
+# noise reduction
+fc = 1/100dt # cut off　※この値に根拠はありません．
+cutoff = abs.(freq) .> fc;
+freq0 = iszero.(freq);
+F0[cutoff .& .!freq0] .= 0.0
+datamod = ifft(F0);
+
 # figure: Power spectrum density
 using PyPlot
 fig1 = figure(figsize=(12,6))
@@ -78,13 +86,6 @@ ax1[:set_ylabel]("Power (m²/s²)",fontsize=12)
 ax1[:grid](which="major",color="k",linestyle="--",alpha=0.5)
 ax1[:grid](which="minor",color="#7D7D7D",linestyle="--",alpha=0.2)
 #fig1[:savefig]("./fig/PSD_PyPlot.png",format="png",dpi=300)
-
-# noise reduction
-fc = 1/100dt # cut off　※この値に根拠はありません．
-cutoff = abs.(freq) .> fc;
-freq0 = iszero.(freq);
-F0[cutoff .& .!freq0] .= 0.0
-datamod = ifft(F0);
 
 # figure 2
 t = 0:dt:(nt-1)*dt;
