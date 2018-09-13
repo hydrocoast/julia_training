@@ -1,7 +1,8 @@
 # Include packages
 using NetCDF
 using Printf
-import Dates
+using Dates
+
 ##############
 ## function(s)
 ##############
@@ -56,7 +57,7 @@ lat = reverse(lat, dims=1)
 wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
-T = Dates.DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
+T = DateTime(1800,1,1)+Hour.(Int.(torg))
 # Figures & animation
 import GMT
 include("./GMTprint.jl")
