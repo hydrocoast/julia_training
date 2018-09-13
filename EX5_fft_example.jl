@@ -4,7 +4,7 @@ pyplot()
 #plotlyjs()
 
 # Include packages
-import FFTW
+using FFTW: fft, ifft
 
 ##############
 ## functions
@@ -68,7 +68,7 @@ dt, nt, nz, z, u = loadtxt()
 
 # Fourier transform
 data = u[1,:];
-F0 = FFTW.fft(data,1);
+F0 = fft(data,1);
 P = abs.(F0/(nt/2)); # Power
 freq = fftfreq(nt,dt);
 
@@ -77,7 +77,7 @@ fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
 F0[cutoff .& .!freq0] .= 0.0
-datamod = FFTW.ifft(F0);
+datamod = ifft(F0);
 
 # figure: Power spectrum density
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end

@@ -4,12 +4,12 @@ pyplot()
 # Include packages
 using NetCDF
 using Printf
-import Dates
+using Dates
 
 ##############
 ## function(s)
 ##############
-function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{Dates.DateTime,1})
+function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{DateTime,1})
     # setup for ticks
     xt = collect(Int64, 0:60:360)
     xtl = [collect(0:60:180);collect(-120:60:0)]
@@ -54,7 +54,7 @@ lat = reverse(lat, dims=1)
 wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
-T = Dates.DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
+T = DateTime(1800,1,1)+Hour.(Int.(torg))
 # Figures & animation
 # DrawSnapShot(1, lon, lat, wspd, T) # 1st step
 #if !isdir("./forgif"); mkdir("./forgif"); end
