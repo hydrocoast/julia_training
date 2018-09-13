@@ -1,14 +1,13 @@
 # Include packages
-using Polynomials
-import DelimitedFiles
-
+using Polynomials: polyfit, polyval
+using DelimitedFiles: readdlm
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
 # directory output
 figdir = "./fig"
 # load ascii file
-dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname))
+dataorg = readdlm(joinpath(fdir,fname))
 years = dataorg[:,1]
 wind = dataorg[:,2]
 stdval = dataorg[:,3]

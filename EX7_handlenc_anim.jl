@@ -4,7 +4,7 @@ anim = pyimport("matplotlib.animation")
 # Include packages
 using NetCDF
 using Printf
-import Dates
+using Dates
 
 ##############
 ## functions
@@ -69,7 +69,7 @@ lat = reverse(lat, dims=1)
 wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
-T = Dates.DateTime(1800,1,1)+Dates.Hour.(Int.(torg))
+T = DateTime(1800,1,1)+Hour.(Int.(torg))
 # Figures & animation
 # figure
 fig = figure(figsize=(9,5))
