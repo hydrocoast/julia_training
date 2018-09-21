@@ -1,5 +1,5 @@
 # Include packages
-import FFTW
+using FFTW: fft, ifft
 
 ##############
 ## functions

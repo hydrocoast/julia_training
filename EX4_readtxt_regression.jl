@@ -1,7 +1,6 @@
 # Include packages
-using Polynomials
-import DelimitedFiles
-
+using Polynomials: polyfit, polyval
+using DelimitedFiles: readdlm
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"

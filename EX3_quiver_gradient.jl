@@ -1,6 +1,7 @@
 if !(@isdefined peaks)
     include("peaks.jl");
 end
+using Printf: @printf, @sprintf
 
 ####################
 ## function

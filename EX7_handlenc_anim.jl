@@ -3,7 +3,7 @@ anim = pyimport("matplotlib.animation")
 
 # Include packages
 using NetCDF
-using Printf
+using Printf: @printf, @sprintf
 import Dates
 
 ##############
