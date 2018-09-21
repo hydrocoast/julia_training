@@ -7,7 +7,7 @@ using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやす�
 if !(@isdefined peaks)
     include("peaks.jl")
 end
-using Printf
+using Printf: @printf, @sprintf
 ##############
 ## functions
 ##############

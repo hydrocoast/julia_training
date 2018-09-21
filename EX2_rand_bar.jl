@@ -3,7 +3,7 @@ pyplot()
 #gr()
 #plotlyjs()
 
-using Printf
+using Printf: @printf, @sprintf
 using Statistics: mean, std
 ####################
 ## main

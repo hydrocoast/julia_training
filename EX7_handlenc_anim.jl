@@ -3,9 +3,8 @@ pyplot()
 
 # Include packages
 using NetCDF
-using Printf
+using Printf: @printf, @sprintf
 using Dates
-
 ##############
 ## function(s)
 ##############

@@ -5,7 +5,7 @@ pyplot()
 
 # Include packages
 using Interpolations
-using Printf
+using Printf: @printf, @sprintf
 using Polynomials: polyfit, polyval
 using DSP: welch_pgram
 using DelimitedFiles: readdlm

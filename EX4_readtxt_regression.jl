@@ -1,9 +1,12 @@
+<<<<<<< HEAD
 using Plots
 pyplot()
 #gr()
 #plotlyjs()
 
 # Include packages
+=======
+>>>>>>> 7821a70... update notation in "using"
 using Polynomials: polyfit, polyval
 using DelimitedFiles: readdlm
 # define the filepath & filename
