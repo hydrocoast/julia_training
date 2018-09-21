@@ -4,7 +4,7 @@ using Printf: @printf, @sprintf
 using Polynomials: polyfit, polyval
 using DSP: welch_pgram
 using DelimitedFiles: readdlm
-import Dates
+using Dates
 
 # function
 function loadcsvsample()
