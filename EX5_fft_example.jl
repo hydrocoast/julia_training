@@ -62,7 +62,7 @@ dt, nt, nz, z, u = loadtxt()
 
 # Fourier transform
 data = u[1,:];
-F0 = FFTW.fft(data,1);
+F0 = fft(data,1);
 P = abs.(F0/(nt/2)); # Power
 freq = fftfreq(nt,dt);
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end

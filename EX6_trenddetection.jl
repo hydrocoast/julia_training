@@ -4,7 +4,7 @@ using Printf: @printf, @sprintf
 using Polynomials: polyfit, polyval
 using DSP: welch_pgram
 using DelimitedFiles: readdlm
-import Dates
+using Dates
 
 # function
 function loadcsvsample()
@@ -24,23 +24,23 @@ if !isdir(figdir); mkdir(figdir); end
 
 # read csv data
 dataorg = loadcsvsample()
-torg = Dates.DateTime.(dataorg[:,1], "yyyy/mm/dd HH:MM")
+torg = DateTime.(dataorg[:,1], "yyyy/mm/dd HH:MM")
 tsecorg = convert.(Float64, Dates.value.((torg-torg[1])/1000)) # ms to s
 V = convert.(Float64, dataorg[:,2])
 dataorg = nothing
 
 # Interpolate
-t = collect(torg[1]:Dates.Day(1):torg[end])
+t = collect(torg[1]:Day(1):torg[end])
 tsec = convert.(Float64, Dates.value.((t-t[1])/1000)) # ms to s
 nt = size(t,1)
 itp = interpolate((tsecorg, ), V, Gridded(Linear()))
 #itp = interpolate((tsecorg, ), V, Gridded(Constant()))
 Vint = itp[tsec]
 # regression
-lin_p = Polynomials.polyfit(tsec, Vint, 1)
+lin_p = polyfit(tsec, Vint, 1)
 # power spectral
 # (注)360*2は結果を合わせにいった値のため根拠なし
-pdg = DSP.welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
+pdg = welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
 days = 1.0./convert.(Float64, pdg.freq)
 PSD = pdg.power
 maxval, Tc = findmax(PSD[2:end])
