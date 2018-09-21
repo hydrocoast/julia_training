@@ -1,9 +1,9 @@
 # Include packages
 using Interpolations
-using Printf
-using Polynomials
-import DSP
-import DelimitedFiles
+using Printf: @printf, @sprintf
+using Polynomials: polyfit, polyval
+using DSP: welch_pgram
+using DelimitedFiles: readdlm
 import Dates
 
 # function
@@ -11,7 +11,7 @@ function loadcsvsample()
     # define the filepath & filename
     fdir = "./data"
     fname = "dat_climate.csv"
-    dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname), ',', skipstart=1)
+    dataorg = readdlm(joinpath(fdir,fname), ',', skipstart=1)
     return dataorg
 end
 

@@ -1,6 +1,6 @@
 # Include packages
 using NetCDF
-using Printf
+using Printf: @printf, @sprintf
 import Dates
 ##############
 ## function(s)

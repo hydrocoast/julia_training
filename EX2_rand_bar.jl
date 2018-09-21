@@ -1,5 +1,5 @@
-using Printf
-import Statistics
+using Printf: @printf, @sprintf
+using Statistics: mean, std
 ####################
 ## main
 ####################
@@ -9,8 +9,8 @@ if !isdir(figdir); mkdir(figdir); end
 
 const N = 50; # the number of vector
 x = 100(rand(N)); #
-x_mean = Statistics.mean(x);
-x_std = Statistics.std(x);
+x_mean = mean(x);
+x_std = std(x);
 ind = sortperm(x)[end:-1:end-4];
 
 horz=collect(1:N)
