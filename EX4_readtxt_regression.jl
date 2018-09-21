@@ -9,7 +9,7 @@ figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 
 # load ascii file
-dataorg = DelimitedFiles.readdlm(joinpath(fdir,fname))
+dataorg = readdlm(joinpath(fdir,fname))
 years = dataorg[:,1]
 wind = dataorg[:,2]
 stdval = dataorg[:,3]

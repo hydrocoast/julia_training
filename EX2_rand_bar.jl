@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 using Printf: @printf, @sprintf
+=======
+using Printf
+>>>>>>> origin/gmt
 using Statistics: mean, std
 ####################
 ## main
