@@ -1,8 +1,3 @@
-using Plots
-pyplot()
-#gr()
-#plotlyjs()
-
 # Include packages
 using FFTW: fft, ifft
 
@@ -54,15 +49,13 @@ function loadtxt()
 end
 ##############
 
+
 ####################
 ## main
 ####################
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # Data source mat or txt
-#using MAT
+# using MAT: MAT
 #dt, nt, nz, z, u = loadmat();
 dt, nt, nz, z, u = loadtxt()
 
@@ -79,22 +72,46 @@ freq0 = iszero.(freq);
 F0[cutoff .& .!freq0] .= 0.0
 datamod = ifft(F0);
 
-# figure: Power spectrum density
+####################
+
+
+####################
+## plot
+####################
+
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
+using Plots
+pyplot()
+#gr()
+#plotlyjs()
+
+########
+## Figure 1
+#  Power spectrum density
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end
 plot(freq[2:nt2], P[2:nt2], lab="Power spectrum", legend=false,
      xscale=:log10, yscale=:log10,
      xlabel="Frequency (Hz)", ylabel="Power (m²/s²)",
      xlims=(2e-4,1e+1), ylims=(1e-4, 2e+0),
-     );
-savefig(joinpath(figdir,"PSD2.png"));
+     )
+savefig(joinpath(figdir,"PSD2.png"))
+########
 
-# figure 2
+########
+## Figure 2
+# original and noise reduced data
 t = 0:dt:(nt-1)*dt;
 plot(t, data, line=(:solid, 1), lab="Raw data", size=(1500, 600),
      xlabel="Time (s)", ylabel="Wind Speed (m/s)", guidefont=14,
      tickfont=12,
-     );
+     )
 plot!(t, real.(datamod), line=(:solid, 2), color=:magenta, lab="Noise reduced",
       legend=:topright, legendfont=14,
-      );
+      )
 savefig(joinpath(figdir,"noise_reduced.png"))
+########
+
+####################
