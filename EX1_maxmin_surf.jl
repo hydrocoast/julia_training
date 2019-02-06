@@ -1,7 +1,3 @@
-using Plots
-pyplot()
-#gr()
-
 if !(@isdefined peaks)
     include("peaks.jl");
 end
@@ -9,22 +5,37 @@ end
 ####################
 ## main
 ####################
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
 const N=31
 xmat, ymat, P = peaks(N);
 xvec = vec(xmat[1,:])
 yvec = vec(ymat[:,1])
-# min & max
+
+# find min
 minval, ind = findmin(P);
 cind = CartesianIndices(P)[ind]
 row_min, col_min = cind[1], cind[2];
+
+# find max
 maxval, ind = findmax(P);
 cind = CartesianIndices(P)[ind]
 row_max, col_max = cind[1], cind[2];
+
+####################
+
+
+####################
+## plot
+####################
+
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
+using Plots
+pyplot()
+#gr()
 
 # see http://docs.juliaplots.org/latest/colors/#colorschemes
 clibrary(:misc)
@@ -47,3 +58,4 @@ scatter!([xvec[col_min]], [yvec[row_min]], [minval], ms=8., color=:yellow, lab="
 scatter!([xvec[col_max]], [yvec[row_max]], [maxval], ms=8., color=:magenta, lab="max",
          legendfont=12, legend=:bottomleft)
 savefig(joinpath(figdir,"surface_3d.png")); # save figure
+#######################
