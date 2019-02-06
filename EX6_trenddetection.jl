@@ -40,7 +40,7 @@ tsec = convert.(Float64, Dates.value.((t-t[1])/1000)) # ms to s
 nt = size(t,1)
 itp = interpolate((tsecorg, ), V, Gridded(Linear()))
 #itp = interpolate((tsecorg, ), V, Gridded(Constant()))
-Vint = itp[tsec]
+Vint = itp(tsec)
 # regression
 lin_p = polyfit(tsec, Vint, 1)
 # power spectral

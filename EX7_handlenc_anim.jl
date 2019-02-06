@@ -55,12 +55,15 @@ torg = ncread(ncfile,"time")
 nt = length(torg);
 T = DateTime(1800,1,1)+Hour.(Int.(torg))
 # Figures & animation
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 # DrawSnapShot(1, lon, lat, wspd, T) # 1st step
 #if !isdir("./forgif"); mkdir("./forgif"); end
 anim = @animate for k=1:24
     @printf("%d, ",k)
     DrawSnapShot(k, lon, lat, wspd, T)
 end
-gifname = "./tmp_monthlywspd.gif"
+gifname = joinpath(figdir,"monthlywspd.gif")
 if isfile(gifname); rm(gifname); end
 gif(anim, gifname, fps=4) #save the animation

@@ -1,108 +1,110 @@
+#######################
+# basic setup
+#######################
+
+# simulation time and interval
+tmin = 0.0
+tmax = 4.0
+dt = 0.01
+
+# domain and spacing
+xmin = -π
+xmax = π
+dx = 0.02
+
+c = π/2 # celerity
+λ² = (c*dt/dx)^2
+
+nx = convert(Int64, round((xmax-xmin)/dx) + 1)
+nt = convert(Int64, round((tmax-tmin)/dt) + 1)
+
+X = collect(Float64, LinRange(xmin, xmax, nx))
+T = collect(Float64, LinRange(tmin, tmax, nt))
+
+#######################
+
+
+#######################
+# general solution
+#######################
+U(x,t) = 0.5*exp(-10((x-c*t)^2)) + 0.5*exp(-10((x+c*t)^2))
+u_solution = [ U(x,t) for x in X, t in T ]
+#######################
+
+
+#######################
+# numerical simulation
+#######################
+# preallocate
+u = zeros(nx, nt)
+
+# initial condition
+f(x) = exp(-10(x^2))
+u_0 = map(f, X)
+u[:,1] = u_0
+
+
+# 2nd step
+#u[:,2] = u[:,1]
+for x in 2:nx-1
+    u[x,2] = 2(1-λ²)*u[x,1] -u[x,1] +λ²*(u[x-1,1]+u[x+1,1])
+    #u[x,2] = u[x,1] + λ²*(u[x+1,1] - 2u[x,1] + u[x-1,1])
+end
+# Neumann boundary condition
+u[1,2] = u[2,2]
+u[nx,2] = u[nx-1,2]
+
+#
+for t = 3:nt
+    for x in 2:nx-1
+        u[x,t] = 2(1-λ²)*u[x,t-1] -u[x,t-2] +λ²*(u[x-1,t-1]+u[x+1,t-1])
+    end
+    # Neumann boundary condition
+    u[1,t] = u[2,t]
+    u[nx,t] = u[nx-1,t]
+end
+#######################
+
+
+#######################
+# plot
+#######################
+# directory output
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
+using Printf
 using Plots
 pyplot()
-clibrary(:misc)
 
-# Include packages
-using OffsetArrays # OffsetArraysを使ってみたが，あまり使いやすくはないかも
-if !(@isdefined peaks)
-    include("peaks.jl")
+# 軸目盛り
+xt = -π:π/2:π
+xtl = ["-π","-π/2","0","π/2","π"]
+
+
+# profiles
+d = 50
+plt = plot3d(repeat(X,outer=(1,length(1:d:nt))),
+             permutedims(repeat(T[1:d:nt],outer=(1,nx))),
+             u[:,1:d:nt],
+             legend=false,
+             )
+plt = plot3d!(plt, aspect_ratio=1.0, view_angle=(55,35))
+plt = plot3d!(plt, xlabel="space", ylabel="time", guidefont=9, xtick=(xt, xtl))
+savefig(joinpath(figdir,"WaveProfiles.svg"))
+##
+
+##
+# animation
+anim = @animate for t = 1:5:nt
+    @printf("%d, ",t)
+    Plots.plot(X, u[:,t], linestyle=:solid, lw=2.0,
+               ylim=(-0.5,1.0), xtick=(xt, xtl), tickfont=10,
+               title=@sprintf("%0.3f s", (t-1)*dt), legend=false)
 end
-using Printf: @printf, @sprintf
-##############
-## functions
-##############
-function OpenBoundAll!(D::Array{T,2}, mgn::Int,
-                       IS::Int, IE::Int, JS::Int, JE::Int,
-                       ny::Int, nx::Int) where T<:AbstractFloat
-    D[IS+mgn:0+mgn   ,1+mgn:nx+mgn] = repeat(D[1+mgn ,1+mgn:nx+mgn], outer=(mgn,1)) # Northern
-    D[ny+1+mgn:IE+mgn,1+mgn:nx+mgn] = repeat(D[ny+mgn,1+mgn:nx+mgn], outer=(mgn,1)) # Southern
-    D[IS+mgn:IE+mgn,   JS+mgn:0+mgn] = repeat(D[IS+mgn:IE+mgn, 1+mgn], outer=(1,mgn)) # Western
-    D[IS+mgn:IE+mgn,nx+1+mgn:JE+mgn] = repeat(D[IS+mgn:IE+mgn,nx+mgn], outer=(1,mgn)) # Eastern
-    return D
-end
-##############
-function SnapShot(xvec::Array{T,1}, yvec::Array{T,1}, D::Array{T,2},
-                  titlestr::String) where T<:AbstractFloat
-    surface(xvec,yvec,D,c=(:rainbow),fillalpha=0.9, tickfont=12,
-            xlims=(-3.,3.), ylims=(-3.,3.), zlims=(-8.,10.), clims=(-6.,6.),
-            xlabel="X", ylabel="Y", zlabel="Z", size=(800,600),
-            colorbar=:best, colorbar_title=" ", title=titlestr, titlefont=14,
-            )
-end
-##############
-
-####################
-## main
-####################
-
-# Parameters
-const N=31
-nx = ny = N
-xmat, ymat, P0 = peaks(N);
-xvec = vec(xmat[1,:])
-yvec = vec(ymat[:,1])
-Δx = (xvec[end]-xvec[1])/(N-1)
-Δy = (yvec[end]-yvec[1])/(N-1)
-
-# Parameters 2
-ν = 5.0e-02 # (m²/s)
-Cu = 0.25 # (m/s)
-Cv = 0.25 # (m/s)
-epsv=1.0e-12
-
-# Time
-Δt = 0.02;
-T = 15.0;
-tlm = [0,T];
-nstep = Int(T/Δt);
-t = collect(Float64, tlm[1]:Δt:tlm[2]);
-# Preallocate & Initialize
-mgn = 1;
-IS = JS = 1-mgn;
-IE = ny + mgn;
-JE = nx + mgn;
-P = OffsetArray{Float64}(undef, IS:IE, JS:JE, 0:nstep)
-# Initial condition t=0
-P[1:ny,1:nx,0] = copy(P0)
-
-# Bonundary
-P[IS:IE,JS:JE,0] = OpenBoundAll!(P[IS:IE,JS:JE,0],mgn, IS,IE,JS,JE,ny,nx)
-# Draw initial conditions
-#SnapShot(xvec, yvec, P[1:ny,1:nx,0], @sprintf("%6.2f",t[1])*" s")
-
-# Calculation
-for k = 1:nstep
-    P0 = OffsetArray{Float64}(undef, IS:IE, JS:JE)
-    P0[IS:IE,JS:JE] = P[IS:IE,JS:JE,k-1]
-    P1 = zeros(ny,nx)
-    for i = 1:ny
-        for j = 1:nx
-            # advection term
-            advterm = -Cv*(Δt/2Δy)*(P0[i+1,j]-P0[i-1,j])-Cu*(Δt/2Δx)*(P0[i,j+1]-P0[i,j-1])
-            if abs(advterm)<epsv; advterm=0.0; end;
-            # diffusion term
-            difterm = ν*((Δt/Δy^2)*(P0[i+1,j]-2P0[i,j]+P0[i-1,j])+(Δt/Δx^2)*(P0[i,j+1]-2P0[i,j]+P0[i,j-1]))
-            if abs(difterm)<epsv; difterm=0.0; end;
-
-            # collect the terms
-            P1[i,j] = P0[i,j] + advterm + difterm
-            # clear
-            advterm = difterm = nothing
-        end
-    end
-    # upload
-    P[1:nx,1:ny,k] = P1
-    P[IS:IE,JS:JE,k] = OpenBoundAll!(P[IS:IE,JS:JE,k],mgn, IS,IE,JS,JE,ny,nx)
-    # clear
-    P1 = nothing
-    #@printf("%d, ",k)
-end
-
-# For Animation
-anim = @animate for k=0:10:nstep
-    @printf("%d, ",k)
-    SnapShot(xvec, yvec, P[1:ny,1:nx,k], @sprintf("%6.2f",t[k+1])*" s")
-end
-gifname = "./tmp_DiffEq.gif"
+gifname = joinpath(figdir,"WaveEq.gif")
 if isfile(gifname); rm(gifname); end
-gif(anim, gifname, fps=10) #save the animation
+gif(anim, gifname, fps=20) #save the animation
+##
+
+#######################
