@@ -1,5 +1,6 @@
+# Include packages
 if !(@isdefined peaks)
-    include("peaks.jl");
+    include("peaks.jl")
 end
 using Printf: @printf, @sprintf
 
@@ -7,41 +8,50 @@ using Printf: @printf, @sprintf
 ## function
 ####################
 function grad2d(dataorg::Array{Float64,2})
-    ny, nx = size(dataorg);
-    Gx = zeros(ny,nx);
-    Gy = zeros(ny,nx);
+    ny, nx = size(dataorg)
+    Gx = zeros(ny,nx)
+    Gy = zeros(ny,nx)
 
     diffx = diff(dataorg, dims=2)
     Gx[:,1], Gx[:,end] = diffx[:,1], diffx[:,end]
-    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1];
+    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1]
 
     diffy = diff(dataorg, dims=1)
     Gy[1,:], Gy[end,:] = diffy[1,:], diffy[end,:]
-    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx];
+    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx]
 
     return(Gx, Gy)
 end
+####################
+
 
 ####################
 ## main
 ####################
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # Parameters
-const N=49
-qs = Int64(2);
-L=0.25;
+const N=31
+qs = Int64(2)
+L=0.25
 # create mesh data
-xmat, ymat, ϕ = peaks(N);
+xmat, ymat, ϕ = peaks(N)
 xvec = vec(xmat[1,:])
 yvec = vec(ymat[:,1])
 # gradient
-ϕx,ϕy = grad2d(ϕ);
-ϕxx,_ = grad2d(ϕx);
-_,ϕyy = grad2d(ϕy);
+ϕx,ϕy = grad2d(ϕ)
+ϕxx,_ = grad2d(ϕx)
+_,ϕyy = grad2d(ϕy)
 
+####################
+
+
+####################
+## plot
+####################
+
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # output to draw arrows
 tmp1 = 0.1; tmp2=0.1; tmp3 = 0.0;
@@ -67,7 +77,7 @@ open( "tmpscale2.txt", "w" ) do fileIO
 end
 
 # import GMT
-import GMT
+using GMT: GMT
 include("./GMTprint.jl")
 
 # Two-dimensional contour
@@ -111,3 +121,5 @@ GMTprint("filled_contour.ps", figdir)
 
 # remove temporary files
 rm.(filter(x->occursin(r"tmp*\.*",x), readdir()))
+
+####################

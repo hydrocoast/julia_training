@@ -6,7 +6,10 @@ using DSP: welch_pgram
 using DelimitedFiles: readdlm
 using Dates
 
+
+####################
 # function
+####################
 function loadcsvsample()
     # define the filepath & filename
     fdir = "./data"
@@ -14,13 +17,12 @@ function loadcsvsample()
     dataorg = readdlm(joinpath(fdir,fname), ',', skipstart=1)
     return dataorg
 end
+####################
+
 
 ####################
 ## main
 ####################
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # read csv data
 dataorg = loadcsvsample()
@@ -35,9 +37,11 @@ tsec = convert.(Float64, Dates.value.((t-t[1])/1000)) # ms to s
 nt = size(t,1)
 itp = interpolate((tsecorg, ), V, Gridded(Linear()))
 #itp = interpolate((tsecorg, ), V, Gridded(Constant()))
-Vint = itp[tsec]
+Vint = itp(tsec)
+
 # regression
 lin_p = polyfit(tsec, Vint, 1)
+
 # power spectral
 # (注)360*2は結果を合わせにいった値のため根拠なし
 pdg = welch_pgram(Vint, 360*2, onesided=true; fs=1.0)
@@ -45,11 +49,22 @@ days = 1.0./convert.(Float64, pdg.freq)
 PSD = pdg.power
 maxval, Tc = findmax(PSD[2:end])
 
+####################
+
+
+####################
+## plot
+####################
+
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
 # figure 1
 # ticklabel format
 tx = Dates.format.(t,"YYYY-mm-dd")
 
-import GMT
+using GMT: GMT
 include("./GMTprint.jl")
 psname,_,_ = GMT.fname_out(Dict())
 
@@ -113,3 +128,5 @@ GMTprint("trend.ps",figdir)
 
 # remove temporary files
 rm.(filter(x->occursin(r"tmp*\.*",x), readdir()))
+
+####################

@@ -1,21 +1,25 @@
-<<<<<<< HEAD
 using Printf: @printf, @sprintf
-=======
-using Printf
->>>>>>> origin/gmt
 using Statistics: mean, std
+
+
 ####################
 ## main
 ####################
-# directory output
+const N = 50 # the number of vector
+x = 100(rand(N)) #
+x_mean = mean(x)
+x_std = std(x)
+ind = sortperm(x)[end:-1:end-4]
+####################
+
+
+####################
+## plot
+####################
+
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
-
-const N = 50; # the number of vector
-x = 100(rand(N)); #
-x_mean = mean(x);
-x_std = std(x);
-ind = sortperm(x)[end:-1:end-4];
 
 horz=collect(1:N)
 horz2=collect(-5:N+5)
@@ -30,7 +34,9 @@ Sopt1="-Sb1u"
 Wopt1="0.2,black"
 
 # figure with GMT
-import GMT
+using GMT: GMT
 GMT.xy(Bopts*" "*Sopt1,[horz[:] x[:]], J=Jopt, R=Ropt, G="gray", W=Wopt1)
 GMT.xy!([horz2[:] m[:]], J=Jopt, R=Ropt, W="1,blue")
 GMTprint("rand_hist.ps", figdir)
+
+####################

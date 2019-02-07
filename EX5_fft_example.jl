@@ -1,6 +1,12 @@
 # Include packages
 using FFTW: fft, ifft
 
+# MAT package is not mature.
+# When it returns a error, comment the following line and
+# read data from the txt formatted file.
+using MAT: MAT
+
+
 ##############
 ## functions
 ##############
@@ -24,7 +30,7 @@ function loadmat()
     fdir = "./data";
     fname = "crf_wind.mat";
     # file open & get variables
-    matfile = matopen(join([fdir,fname],"/"));
+    matfile = MAT.matopen(join([fdir,fname],"/"));
     dt, nt, nz = read(matfile,"dt"), Int(read(matfile,"nt")), Int(read(matfile,"nz"));
     z, u = read(matfile,"z"), read(matfile,"u");
     return dt, nt, nz, z, u
@@ -49,17 +55,14 @@ function loadtxt()
 end
 ##############
 
+
 ####################
 ## main
 ####################
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # Data source mat or txt
-#using MAT
-#dt, nt, nz, z, u = loadmat();
-dt, nt, nz, z, u = loadtxt()
+dt, nt, nz, z, u = loadmat() # mat
+#dt, nt, nz, z, u = loadtxt() # txt
 
 # Fourier transform
 data = u[1,:];
@@ -72,12 +75,23 @@ fc = 1/100dt # cut off　※この値に根拠はありません．
 cutoff = abs.(freq) .> fc;
 freq0 = iszero.(freq);
 F0[cutoff .& .!freq0] .= 0.0
-datamod = FFTW.ifft(F0);
+datamod = ifft(F0);
+
+####################
+
+
+####################
+## plot
+####################
+
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
 
 # figure: Power spectrum density
 if isodd(nt); nt2 = Int((nt-1)/2); else; nt2 = Int(nt/2); end
 
-import GMT
+using GMT: GMT
 include("./GMTprint.jl")
 psname,_,_ = GMT.fname_out(Dict())
 
@@ -118,3 +132,5 @@ GMT.gmt("pslegend -J$proj -R$region -DjTR+w5+o0.2/0.2 -F+p0.5+gwhite -O -P -V $l
 rm(lfile)
 # save the figure
 GMTprint("noise_reduced.ps",figdir)
+
+####################

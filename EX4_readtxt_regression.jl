@@ -1,12 +1,15 @@
 # Include packages
 using Polynomials: polyfit, polyval
 using DelimitedFiles: readdlm
+
+
+####################
+## main
+####################
+
 # define the filepath & filename
 fdir = "./data"
 fname = "windspeed.dat"
-# directory output
-figdir="./fig"
-if !isdir(figdir); mkdir(figdir); end
 
 # load ascii file
 dataorg = readdlm(joinpath(fdir,fname))
@@ -18,8 +21,18 @@ lin_p = polyfit(years, wind, 1)
 quad_p = polyfit(years, wind, 2)
 years_ext = years[end]:2100.0
 
+####################
+
+####################
+## plot
+####################
+
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
 # import GMT
-import GMT
+using GMT: GMT
 include("./GMTprint.jl")
 psname,_,_ = GMT.fname_out(Dict())
 
@@ -48,3 +61,5 @@ end
 GMT.gmt("pslegend -J$proj -R$region -DjBL+w4.75+o0.25 -F+p0.5+gwhite -O -P -V $lfile >> $psname")
 rm(lfile)
 GMTprint("regression.ps", figdir)
+
+####################

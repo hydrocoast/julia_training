@@ -2,32 +2,7 @@
 using NetCDF
 using Printf: @printf, @sprintf
 using Dates
-##############
-## function(s)
-##############
-function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{Dates.DateTime,1})
-    psname,_,_ = GMT.fname_out(Dict())
-    titlestr=Dates.format(T[k], "yyyy/mm")
-    # makecpt
-    crange="0/14/1"
-    cbxy="15.8/3.5/7.5/0.4"
-    cafg="-Bxa2f1 -By+l(m/s)"
-    afg="-Bxa60f30 -Bya60f30 -BSWNe+t$titlestr"
-    proj="X15/7.5"
-    region="g0/360/-90/90"
-    #
-    latmat=repeat(lat, outer=(1,length(lon)))
-    lonmat=repeat(lon', outer=(length(lat),1))
-    llrange=[lon[1] lon[end] lat[1] lat[end]]
-    Δ=(lon[end]-lon[1])/(length(lon)-1)
-    # GMT scripts
-    cpt = GMT.gmt("makecpt -Chaxby -T$crange -D")
-    G = GMT.surface([lonmat[:] latmat[:] vec(wspd[:,:,k])], R=llrange, I=Δ)
-    GMT.gmt("psbasemap -J$proj -R$region $afg -P -K > $psname")
-    GMT.grdview!(G, J=proj, R=region, C=cpt, Q="i")
-    GMT.gmt("pscoast -J -R -Dc -Wthinnest,black -P -K -O >> $psname")
-    #GMT.scale!(cafg, D=cbxy, C=cpt)
-end
+
 
 ####################
 ## main
@@ -57,10 +32,49 @@ wspd = reverse(wspd, dims=1)
 torg = ncread(ncfile,"time")
 nt = length(torg);
 T = DateTime(1800,1,1)+Hour.(Int.(torg))
+
+####################
+
+####################
+## plot
+####################
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
 # Figures & animation
-import GMT
+using GMT: GMT
 include("./GMTprint.jl")
 GMT.gmt("set FONT_TITLE 16p")
+
+##############
+## function(s)
+##############
+function DrawSnapShot(k::Int, lon, lat, wspd, T::Array{Dates.DateTime,1})
+    psname,_,_ = GMT.fname_out(Dict())
+    titlestr=Dates.format(T[k], "yyyy/mm")
+    # makecpt
+    crange="0/14/1"
+    cbxy="15.8/3.5/7.5/0.4"
+    cafg="-Bxa2f1 -By+l(m/s)"
+    afg="-Bxa60f30 -Bya60f30 -BSWNe+t$titlestr"
+    proj="X15/7.5"
+    region="g0/360/-90/90"
+    #
+    latmat=repeat(lat, outer=(1,length(lon)))
+    lonmat=repeat(lon', outer=(length(lat),1))
+    llrange=[lon[1] lon[end] lat[1] lat[end]]
+    Δ=(lon[end]-lon[1])/(length(lon)-1)
+    # GMT scripts
+    cpt = GMT.gmt("makecpt -Chaxby -T$crange -D")
+    G = GMT.surface([lonmat[:] latmat[:] vec(wspd[:,:,k])], R=llrange, I=Δ)
+    GMT.gmt("psbasemap -J$proj -R$region $afg -P -K > $psname")
+    GMT.grdview!(G, J=proj, R=region, C=cpt, Q="i")
+    GMT.gmt("pscoast -J -R -Dc -Wthinnest,black -P -K -O >> $psname")
+    #GMT.scale!(cafg, D=cbxy, C=cpt)
+end
+##############
+
 
 # test to make figure at initial step
 #DrawSnapShot(1, lon, lat, wspd, T)
@@ -82,3 +96,5 @@ if Sys.islinux()
     run(`rm palette.png`)
     =#
 end
+
+####################
