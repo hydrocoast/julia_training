@@ -1,6 +1,12 @@
 # Include packages
 using FFTW: fft, ifft
 
+# MAT package is not mature.
+# When it returns a error, comment the following line and
+# read data from the txt formatted file.
+using MAT: MAT
+
+
 ##############
 ## functions
 ##############
@@ -24,7 +30,7 @@ function loadmat()
     fdir = "./data";
     fname = "crf_wind.mat";
     # file open & get variables
-    matfile = matopen(join([fdir,fname],"/"));
+    matfile = MAT.matopen(join([fdir,fname],"/"));
     dt, nt, nz = read(matfile,"dt"), Int(read(matfile,"nt")), Int(read(matfile,"nz"));
     z, u = read(matfile,"z"), read(matfile,"u");
     return dt, nt, nz, z, u
@@ -55,9 +61,8 @@ end
 ####################
 
 # Data source mat or txt
-# using MAT: MAT
-#dt, nt, nz, z, u = loadmat();
-dt, nt, nz, z, u = loadtxt()
+dt, nt, nz, z, u = loadmat() # mat
+#dt, nt, nz, z, u = loadtxt() # txt
 
 # Fourier transform
 data = u[1,:];
@@ -79,7 +84,7 @@ datamod = ifft(F0);
 ## plot
 ####################
 
-# directory output
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 

@@ -56,7 +56,7 @@ maxval, Tc = findmax(PSD[2:end])
 ## plot
 ####################
 
-# directory output
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 

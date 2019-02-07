@@ -27,7 +27,7 @@ years_ext = years[end]:2100.0
 ## plot
 ####################
 
-# directory output
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 

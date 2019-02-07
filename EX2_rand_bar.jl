@@ -17,7 +17,7 @@ ind = sortperm(x)[end:-1:end-4]
 ## plot
 ####################
 
-# directory output
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
 

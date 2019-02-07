@@ -49,9 +49,10 @@ _,ϕyy = grad2d(ϕy)
 ## plot
 ####################
 
-# directory output
+# directory where figures are printed
 figdir="./fig"
 if !isdir(figdir); mkdir(figdir); end
+
 using Plots
 pyplot()
 #gr()
