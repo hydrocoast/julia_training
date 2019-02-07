@@ -1,10 +1,49 @@
-using PyPlot, PyCall
-anim = pyimport("matplotlib.animation")
-
 # Include packages
 using NetCDF
 using Printf: @printf, @sprintf
 using Dates
+
+
+####################
+## main
+####################
+
+# Name of NetCDF file
+ncfile="./data/wspd.mon.mean.nc"
+if !isfile(ncfile)
+    # download NetCDF file
+    # These data were collected and distributed by
+    # Research Institute for Sustainable Humanosphere,
+    # Kyoto University (http://database.rish.kyoto-u.ac.jp/index-e.html).
+    url="http://database.rish.kyoto-u.ac.jp/arch/ncep/data/ncep.reanalysis.derived/surface/wspd.mon.mean.nc"
+    download(url, ncfile)
+end
+
+# Get information
+# ncinfo(ncfile)
+
+# Get variables
+lon = convert.(Float64, ncread(ncfile,"lon"))
+lat = convert.(Float64, ncread(ncfile,"lat"))
+wspd = permutedims(ncread(ncfile,"wspd"), [2 1 3])
+# convert the order of latitudes, 90:-90 to -90:90
+lat = reverse(lat, dims=1)
+wspd = reverse(wspd, dims=1)
+torg = ncread(ncfile,"time")
+nt = length(torg);
+T = DateTime(1800,1,1)+Hour.(Int.(torg))
+
+####################
+
+####################
+## plot
+####################
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
+using PyPlot, PyCall
+anim = pyimport("matplotlib.animation")
 
 ##############
 ## functions
@@ -42,46 +81,19 @@ function DrawSnapShot(k::Int, ax::PyCall.PyObject,
 end
 ##############
 
-####################
-## main
-####################
-
-# Name of NetCDF file
-ncfile="./data/wspd.mon.mean.nc"
-if !isfile(ncfile)
-    # download NetCDF file
-    # These data were collected and distributed by
-    # Research Institute for Sustainable Humanosphere,
-    # Kyoto University (http://database.rish.kyoto-u.ac.jp/index-e.html).
-    url="http://database.rish.kyoto-u.ac.jp/arch/ncep/data/ncep.reanalysis.derived/surface/wspd.mon.mean.nc"
-    download(url, ncfile)
-end
-
-# Get information
-# ncinfo(ncfile)
-
-# Get variables
-lon = convert.(Float64, ncread(ncfile,"lon"))
-lat = convert.(Float64, ncread(ncfile,"lat"))
-wspd = permutedims(ncread(ncfile,"wspd"), [2 1 3])
-# convert the order of latitudes, 90:-90 to -90:90
-lat = reverse(lat, dims=1)
-wspd = reverse(wspd, dims=1)
-torg = ncread(ncfile,"time")
-nt = length(torg);
-T = DateTime(1800,1,1)+Hour.(Int.(torg))
-# Figures & animation
 # figure
 fig = figure(figsize=(9,5))
 ax = fig[:add_subplot](111)
 Tstr = Dates.format.(T, "yyyy/mm")
 
+# animation
 # 1st step
 PC = DrawSnapShot(0, ax, lon, lat, wspd, Tstr)
 SetColorbar(fig, PC)
-# animation
 wanim = anim[:FuncAnimation](fig, DrawSnapShot, fargs=(ax, lon, lat, wspd, Tstr), interval=400, frames=24)
-wanim[:save]("monthly_wspd_PyPlot.gif", writer="imagemagick")
+wanim[:save](joinpath(figdir,"monthly_wspd_PyPlot.gif"), writer="imagemagick")
 # closeをしないとなぜか無限ループになる？ (PyPlot 2.5.0, PyCall 1.15.0時点)
 fig[:clear]()
 close(fig)
+
+####################

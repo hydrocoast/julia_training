@@ -1,5 +1,6 @@
+# Include packages
 if !(@isdefined peaks)
-    include("peaks.jl");
+    include("peaks.jl")
 end
 using Printf: @printf, @sprintf
 
@@ -7,26 +8,26 @@ using Printf: @printf, @sprintf
 ## function
 ####################
 function grad2d(dataorg::Array{Float64,2})
-    ny, nx = size(dataorg);
-    Gx = zeros(ny,nx);
-    Gy = zeros(ny,nx);
+    ny, nx = size(dataorg)
+    Gx = zeros(ny,nx)
+    Gy = zeros(ny,nx)
 
     diffx = diff(dataorg, dims=2)
     Gx[:,1], Gx[:,end] = diffx[:,1], diffx[:,end]
-    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1];
+    Gx[:,2:nx-1] = [(dataorg[i,j+1]-dataorg[i,j-1])/2 for i=1:ny, j=2:nx-1]
 
     diffy = diff(dataorg, dims=1)
     Gy[1,:], Gy[end,:] = diffy[1,:], diffy[end,:]
-    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx];
+    Gy[2:ny-1,:] = [(dataorg[i+1,j]-dataorg[i-1,j])/2 for i=2:ny-1, j=1:nx]
 
     return(Gx, Gy)
 end
+####################
+
 
 ####################
 ## main
 ####################
-# directory output
-figdir = "./fig"
 
 # Parameters
 const N=31
@@ -41,9 +42,23 @@ yvec = vec(ymat[:,1])
 ϕxx,_ = grad2d(ϕx);
 _,ϕyy = grad2d(ϕy);
 
+####################
+
+
+####################
+## plot
+####################
+
+# directory where figures are printed
+figdir="./fig"
+if !isdir(figdir); mkdir(figdir); end
+
 using PyPlot
-nContour = 14
+
+########
+## Figure 1
 # Two-dimensional non-filled contour
+nContour = 14
 fig1 = figure()
 ax1 = fig1[:add_subplot](111)
 CS1 = ax1[:contour](xmat, ymat, ϕ, nContour, cmap="jet")
@@ -54,7 +69,10 @@ ax1[:quiverkey](Q, 0.5, 0.90, 1, "1.0",labelpos="E", coordinates="figure")
 ax1[:set_xlabel]("X-axis", fontsize=12)
 ax1[:set_ylabel]("Y-axis", fontsize=12)
 ax1[:axis]("scaled")
+########
 
+########
+## Figure 2
 # filled contour
 fig2 = figure()
 ax2 = fig2[:add_subplot](111)
@@ -67,8 +85,10 @@ ax2[:quiverkey](Q, 0.5, 0.90, 1, "1.0",labelpos="E", coordinates="figure")
 ax2[:set_xlabel]("X-axis", fontsize=12)
 ax2[:set_ylabel]("Y-axis", fontsize=12)
 ax2[:axis]("scaled")
+########
 
 # save figures
-if !isdir(figdir); mkdir(figdir); end
 fig1[:savefig](joinpath(figdir,"contour_grad2d_PyPlot.png"),format="png",dpi=300)
 fig2[:savefig](joinpath(figdir,"contourf_grad2d_PyPlot.png"), format="png",dpi=300)
+
+####################
