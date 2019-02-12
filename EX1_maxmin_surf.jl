@@ -51,11 +51,11 @@ msize="c0.25"
 
 # GMT commands
 #cpt = GMT.makecpt(C="seis", T=crange, N=1, I="c")
-cpt = GMT.makecpt(C="rainbow", T=crange)
+cpt = GMT.makecpt(C=:rainbow, T=crange)
 G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
 GMT.grdcontour(G, J=proj, R=xyrange, B=ax, color=cpt, W="+c")
-GMT.plot!(xvec[col_min], yvec[row_min], J=proj, R=xyrange, S=msize, G="blue")
-GMT.plot!(xvec[col_max], yvec[row_max], J=proj, R=xyrange, S=msize, G="orange")
+GMT.plot!(xvec[col_min], yvec[row_min], J=proj, R=xyrange, S=msize, G=:blue)
+GMT.plot!(xvec[col_max], yvec[row_max], J=proj, R=xyrange, S=msize, G=:red)
 GMTprint("contour.ps",figdir)
 
 # Three dimensional surface plot
@@ -70,22 +70,16 @@ crange="-6/8/0.1"
 cbD="jBR+w10.0/0.3+o-5.5/0.0"
 cbax="xa2f1 y+lZ"
 
-## psxyzに該当するものがない？
-#psname,_,_ = GMT.fname_out(Dict())
-#medge="-W0.1,black"
-#msize="-Sc0.25"
-#markermin=string([xvec[col_min] yvec[row_min] minval])
-#markermax=string([xvec[col_max] yvec[row_max] maxval])
+msize="U0.15"
 
 # GMT commands
-#cpt = GMT.makecpt("-Z -D",C="rainbow",T=crange)
-# GMT.makecptのDオプションでは,色の外挿ができなかったので
-cpt = GMT.gmt("makecpt -Crainbow -T$crange -Z -D -N")
+# GMT.makecptの -D オプションにバグあり
+cpt = GMT.gmt("makecpt -Crainbow -T$crange -D -Z -N")
 G = GMT.surface([xmat[:] ymat[:] P[:]], R=xyrange, I=Δ)
-GMT.grdview(G, J=proj, R=xyzrange, Jz=zratio, B=ax, C=cpt, Q="sm", p=vw)
+GMT.grdview(G, J=proj, R=xyzrange, Jz=zratio, B=ax, C=cpt, Q="sm", p=vw, Z=0.0)
 GMT.colorbar!(J=proj, Jz=zratio, R=G, B=cbax, D=cbD, C=cpt)
-GMT.scatter3!([xvec[col_min]], [yvec[row_min]], [minval], J=proj, Jz=zratio, R=xyzrange, S=msize, G="blue")
-GMT.scatter3!([xvec[col_max]], [yvec[row_max]], [maxval], J=proj, Jz=zratio, R=xyzrange, S=msize, G="orange")
+GMT.scatter3!([xvec[col_min]], [yvec[row_min]], [minval], J=proj, Jz=zratio, R=xyzrange, S=msize, G=:blue, p=vw)
+GMT.scatter3!([xvec[col_max]], [yvec[row_max]], [maxval], J=proj, Jz=zratio, R=xyzrange, S=msize, G=:red, p=vw)
 GMTprint("surface3D.ps",figdir)
 
 ####################

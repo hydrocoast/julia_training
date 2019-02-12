@@ -27,16 +27,21 @@ m=repeat([x_mean], outer=(length(horz2),1))
 stdstr=@sprintf("%0.2f",x_std)
 
 # GMT options
-Bopts="-Bxa10f5 -Bya20f10 -BSWne+tstd=$stdstr"
-Jopt="X12"
-Ropt="-1/52/0/105"
-Sopt1="-Sb1u"
-Wopt1="0.2,black"
-
+axes="xa10f5 ya20f10 SWne+tstd=$stdstr"
+proj="X12"
+region="-1/52/0/105"
+pen1="thin,black"
+pen2="1,blue"
+fill=:gray
 # figure with GMT
 using GMT: GMT
-GMT.xy(Bopts*" "*Sopt1,[horz[:] x[:]], J=Jopt, R=Ropt, G="gray", W=Wopt1)
-GMT.xy!([horz2[:] m[:]], J=Jopt, R=Ropt, W="1,blue")
+#GMT.xy(Bopts*" "*Sopt1,[horz[:] x[:]], J=Jopt, R=Ropt, G="gray", W=Wopt1)
+#GMT.xy!([horz2[:] m[:]], J=Jopt, R=Ropt, W="1,blue")
+### size keywordを設定するとplotになる、
+### check_caller
+### psxy: Warning: 1u+ not a valid number and may not be decoded properly.
+GMT.bar(horz[:], x[:], J=proj, R=region, G=fill, W=pen1, size=1)
+#GMT.plot!(horz2[:], m[:], J=proj, R=region, B=axes, S="-", W=pen2)
 GMTprint("rand_hist.ps", figdir)
 
 ####################
