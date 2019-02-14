@@ -27,7 +27,9 @@ T = collect(Float64, LinRange(tmin, tmax, nt))
 #######################
 # general solution
 #######################
-U(x,t) = 0.5*exp(-10((x-c*t)^2)) + 0.5*exp(-10((x+c*t)^2))
+# Gaussian distribution
+σ = 1/sqrt(2pi)
+U(x,t) = 0.5*(1/(sqrt(2pi)σ))*exp(-(x-c*t)^2/(2σ^2)) + 0.5*(1/(sqrt(2pi)σ))*exp(-(x+c*t)^2/(2σ^2))
 u_solution = [ U(x,t) for x in X, t in T ]
 #######################
 
@@ -39,7 +41,8 @@ u_solution = [ U(x,t) for x in X, t in T ]
 u = zeros(nx, nt)
 
 # initial condition
-f(x) = exp(-10(x^2))
+# Gaussian distribution
+f(x) = 1/(sqrt(2pi)σ)*exp(-x^2/(2σ^2))
 u_0 = map(f, X)
 u[:,1] = u_0
 
