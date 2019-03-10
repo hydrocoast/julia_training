@@ -53,29 +53,29 @@ function ArrangeAxes(ax::PyCall.PyObject)
     xtl = [collect(0:60:180);collect(-120:60:0)]
     xtl = [@sprintf("%d",xtl[i]) for i=1:length(xtl)]
     yt = collect(Int64, -90:30:90)
-    ax[:axis]("scaled")
-    ax[:set_xlim](xt[1], xt[end])
-    ax[:set_xticks](xt)
-    ax[:set_xticklabels](xtl)
-    ax[:set_xlabel]("Longitude", fontsize=14)
-    ax[:set_yticks](yt)
-    ax[:set_ylim](-90., 90.)
-    ax[:set_ylabel]("Latitude", fontsize=14)
+    ax.axis("scaled")
+    ax.set_xlim(xt[1], xt[end])
+    ax.set_xticks(xt)
+    ax.set_xticklabels(xtl)
+    ax.set_xlabel("Longitude", fontsize=14)
+    ax.set_yticks(yt)
+    ax.set_ylim(-90., 90.)
+    ax.set_ylabel("Latitude", fontsize=14)
 end
 ##############
 function SetColorbar(fig::PyPlot.Figure, PC::PyCall.PyObject)
-    PC[:set_clim](0., 16.)
-    cbar = fig[:colorbar](PC, ticks=LinRange(0.,16.,9))
-    cbar[:ax][:set_ylabel]("mean wind speed (m/s)", fontsize=14)
+    PC.set_clim(0., 16.)
+    cbar = fig.colorbar(PC, ticks=LinRange(0.,16.,9))
+    cbar.ax.set_ylabel("mean wind speed (m/s)", fontsize=14)
 end
 ##############
 function DrawSnapShot(k::Int, ax::PyCall.PyObject,
                       lon, lat, wspd, Tstr::Array{String,1})
     @printf("%d, ",k+1)
-    ax[:clear]()
-    #fig[:clear]()
-    PC = ax[:pcolor](lon, lat, wspd[:,:,k+1], cmap="jet")
-    ax[:set_title](Tstr[k+1], fontsize=14)
+    ax.clear()
+    #fig.clear()
+    PC = ax.pcolor(lon, lat, wspd[:,:,k+1], cmap="jet")
+    ax.set_title(Tstr[k+1], fontsize=14)
     ArrangeAxes(ax)
     return PC
 end
@@ -83,17 +83,17 @@ end
 
 # figure
 fig = figure(figsize=(9,5))
-ax = fig[:add_subplot](111)
+ax = fig.add_subplot(111)
 Tstr = Dates.format.(T, "yyyy/mm")
 
 # animation
 # 1st step
 PC = DrawSnapShot(0, ax, lon, lat, wspd, Tstr)
 SetColorbar(fig, PC)
-wanim = anim[:FuncAnimation](fig, DrawSnapShot, fargs=(ax, lon, lat, wspd, Tstr), interval=400, frames=24)
-wanim[:save](joinpath(figdir,"monthly_wspd_PyPlot.gif"), writer="imagemagick")
+wanim = anim.FuncAnimation(fig, DrawSnapShot, fargs=(ax, lon, lat, wspd, Tstr), interval=400, frames=24)
+wanim.save(joinpath(figdir,"monthly_wspd_PyPlot.gif"), writer="imagemagick")
 # closeをしないとなぜか無限ループになる？ (PyPlot 2.5.0, PyCall 1.15.0時点)
-fig[:clear]()
+#fig.clear()
 close(fig)
 
 ####################

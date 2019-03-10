@@ -70,33 +70,33 @@ xtl = Dates.format.(xt, Dates.DateFormat("Y"))
 ########
 ## Figure 1
 #  trend
-fig1 = figure()
-ax1 = fig1[:add_subplot](111)
-ax1[:plot](t,Vint,"r-")
-ax1[:plot](t,polyval(lin_p,tsec),"b-")
-ax1[:set_xlim](xt[1]-Dates.Day(100), xt[end])
-ax1[:xaxis][:set_ticks](xt)
-ax1[:xaxis][:set_ticklabels](xtl)
-ax1[:grid](which="major",ls="-",alpha=0.5)
-ax1[:legend](["Daily","Regression"],fontsize=12,loc=4)
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(111)
+ax1.plot(t, Vint, "r-")
+ax1.plot(t, polyval(lin_p,tsec), "b-")
+ax1.set_xlim(xt[1]-Dates.Day(100), xt[end])
+ax1.xaxis.set_ticks(xt)
+ax1.xaxis.set_ticklabels(xtl)
+ax1.grid(which="major", ls="-", alpha=0.5)
+ax1.legend(["Daily","Regression"], fontsize=12, loc=4)
 # save figure
-fig1[:savefig](joinpath(figdir,"uniformed_data_PyPlot.png"),format="png",dpi=300)
+fig1.savefig(joinpath(figdir,"uniformed_data_PyPlot.png"), format="png", dpi=300)
 ########
 
 ########
 ## Figure 2
 #  periods
-fig2 = figure()
-ax2 = fig2[:add_subplot](111)
-ax2[:semilogx](days[2:end], PSD[2:end],"c-",label="PSD")
-ax2[:semilogx](days[Tc+1], PSD[Tc+1],"mo",label="Period: "*@sprintf("%.0f",days[Tc+1])*"days")
-ax2[:legend](fontsize=12,loc=2)
-ax2[:set_xlim](1e0,1e3)
-ax2[:set_xlabel]("Days",fontsize=12)
-ax2[:grid](which="major",color="k",ls="--",alpha=0.5)
-ax2[:grid](which="minor",color="#7D7D7D",ls="--",alpha=0.5)
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(111)
+ax2.semilogx(days[2:end], PSD[2:end], "c-", label="PSD")
+ax2.semilogx(days[Tc+1], PSD[Tc+1], "mo", label="Period: "*@sprintf("%.0f",days[Tc+1])*"days")
+ax2.legend(fontsize=12, loc=2)
+ax2.set_xlim(1e0,1e3)
+ax2.set_xlabel("Days", fontsize=12)
+ax2.grid(which="major", color="k", ls="--", alpha=0.5)
+ax2.grid(which="minor", color="#7D7D7D", ls="--", alpha=0.5)
 # save figure
-fig2[:savefig](joinpath(figdir,"trend_PyPlot.png"),format="png",dpi=300)
+fig2.savefig(joinpath(figdir,"trend_PyPlot.png"), format="png", dpi=300)
 ########
 
 ####################

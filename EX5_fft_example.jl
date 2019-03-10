@@ -95,16 +95,16 @@ using PyPlot
 ## Figure 1
 #  Power spectrum density
 fig1 = figure(figsize=(12,6))
-ax1 = fig1[:add_subplot](111)
-ax1[:loglog](freq[2:nt2], P[2:nt2],"b-")
-ax1[:set_xlim](2e-4,1e+1)
-ax1[:set_ylim](1e-4,2e+0)
-ax1[:set_xlabel]("Frequency (Hz)",fontsize=12)
-ax1[:set_ylabel]("Power (m²/s²)",fontsize=12)
-ax1[:grid](which="major",color="k",linestyle="--",alpha=0.5)
-ax1[:grid](which="minor",color="#7D7D7D",linestyle="--",alpha=0.2)
+ax1 = fig1.add_subplot(111)
+ax1.loglog(freq[2:nt2], P[2:nt2], "b-")
+ax1.set_xlim(2e-4,1e+1)
+ax1.set_ylim(1e-4,2e+0)
+ax1.set_xlabel("Frequency (Hz)", fontsize=12)
+ax1.set_ylabel("Power (m²/s²)", fontsize=12)
+ax1.grid(which="major", color="k", linestyle="--", alpha=0.5)
+ax1.grid(which="minor", color="#7D7D7D", linestyle="--", alpha=0.2)
 # save figure
-fig1[:savefig]("./fig/PSD_PyPlot.png",format="png",dpi=300)
+fig1.savefig("./fig/PSD_PyPlot.png", format="png", dpi=300)
 ########
 
 ########
@@ -112,15 +112,15 @@ fig1[:savefig]("./fig/PSD_PyPlot.png",format="png",dpi=300)
 # original and noise reduced data
 t = 0:dt:(nt-1)*dt;
 fig2 = figure(figsize=(15,6))
-ax2 = fig2[:add_subplot](111)
-ax2[:plot](t,data,"c-")
-ax2[:plot](t,real.(datamod),"m-")
-ax2[:grid](which="major",color="k",linestyle="--",alpha=0.5)
-ax2[:legend](["Raw data","Noise reduced"],fontsize=12,loc=1)
-ax2[:set_xlabel]("Time (s)",fontsize=12)
-ax2[:set_ylabel]("Wind Speed (m/s)",fontsize=12)
+ax2 = fig2.add_subplot(111)
+ax2.plot(t, data,"c-")
+ax2.plot(t, real.(datamod), "m-")
+ax2.grid(which="major", color="k", linestyle="--", alpha=0.5)
+ax2.legend(["Raw data","Noise reduced"], fontsize=12, loc=1)
+ax2.set_xlabel("Time (s)", fontsize=12)
+ax2.set_ylabel("Wind Speed (m/s)", fontsize=12)
 # save figure
-fig2[:savefig](joinpath(figdir,"Noise_reduction_PyPlot.png"),format="png",dpi=300)
+fig2.savefig(joinpath(figdir,"Noise_reduction_PyPlot.png"), format="png", dpi=300)
 ########
 
 ####################

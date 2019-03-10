@@ -89,24 +89,24 @@ function ForAnim(k::Int, ax::PyCall.PyObject,
     xt = -π:π/2:π
     xtl = ["-π","-π/2","0","π/2","π"]
 
-    ax[:clear]()
-    ax[:plot](X, P[:,k+1])
-    ax[:set_xticks](xt)
-    ax[:set_xticklabels](xtl)
-    ax[:set_ylim](-0.5,1.0)
-    ax[:set_title](@sprintf("%6.2f", t[k+1])*" s")
+    ax.clear()
+    ax.plot(X, P[:,k+1])
+    ax.set_xticks(xt)
+    ax.set_xticklabels(xtl)
+    ax.set_ylim(-0.5,1.0)
+    ax.set_title(@sprintf("%6.2f", t[k+1])*" s")
 end
 ##############
 
 # For Animation
 fig = figure()
-ax = fig[:add_subplot](111)
+ax = fig.add_subplot(111)
 ##== check 1st step
 #ForAnim(1, ax, X, u, T)
 #==#
-myanim = anim[:FuncAnimation](fig, ForAnim, fargs=(ax, X, u[:,1:5:end], T[1:5:end]),
-                              interval=50, frames=size(T[1:5:end],1))
-myanim[:save](joinpath(figdir,"WaveEq_PyPlot.gif"), writer="imagemagick")
+myanim = anim.FuncAnimation(fig, ForAnim, fargs=(ax, X, u[:,1:5:end], T[1:5:end]),
+                            interval=50, frames=size(T[1:5:end],1))
+myanim.save(joinpath(figdir,"WaveEq_PyPlot.gif"), writer="imagemagick")
 close(fig)
 
 #######################

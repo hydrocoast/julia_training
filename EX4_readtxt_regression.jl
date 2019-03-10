@@ -35,22 +35,22 @@ using PyPlot
 
 #figure
 fig = figure()
-ax = fig[:add_subplot](111)
-ax[:scatter](years, wind, marker="o", s=25)
+ax = fig.add_subplot(111)
+ax.scatter(years, wind, marker="o", s=25)
 # regression
-ax[:plot](years, polyval(lin_p,years), "-", c="r", lw=1.5)
-ax[:plot](years, polyval(quad_p,years), "-", c="g", lw=1.5)
-ax[:legend](["Linear","Quad","Raw data"]) # 逆順？
+ax.plot(years, polyval(lin_p,years), "-", c="r", lw=1.5)
+ax.plot(years, polyval(quad_p,years), "-", c="g", lw=1.5)
+ax.legend(["Linear","Quad","Raw data"]) # 逆順？
 # toward 2100
-ax[:plot](years_ext, polyval(lin_p,years_ext), "--", c="r", lw=1.5)
-ax[:plot](years_ext, polyval(quad_p,years_ext), "--", c="g", lw=1.5)
+ax.plot(years_ext, polyval(lin_p,years_ext), "--", c="r", lw=1.5)
+ax.plot(years_ext, polyval(quad_p,years_ext), "--", c="g", lw=1.5)
 # format
-ax[:set_xlim](1940,2105)
-ax[:grid](color="k",linestyle="--", alpha=0.5)
-ax[:set_xlabel]("Year",fontsize=12)
-ax[:set_ylabel]("Wind speed (m/s)",fontsize=12)
+ax.set_xlim(1940,2105)
+ax.grid(color="k",linestyle="--", alpha=0.5)
+ax.set_xlabel("Year",fontsize=12)
+ax.set_ylabel("Wind speed (m/s)",fontsize=12)
 
 # save figure
-fig[:savefig](joinpath(figdir,"regression_analysis.png"),format="png",dpi=300)
+fig.savefig(joinpath(figdir,"regression_analysis.png"), format="png", dpi=300)
 
 ####################
