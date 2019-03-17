@@ -1,5 +1,5 @@
 # Learning Julia
-Julia traininig course  
+Julia training course  
 
 # Overview
 This repository follows [this page](https://hydrocoast.jp/index.php?Julia).   
@@ -30,7 +30,7 @@ Please contact the author if you find a bug.
 ```bash
 git clone https://github.com/hydrocoast/julia_training
 ```
-- `cd julia_training` and then excecute the scripts in REPL of the JuliaLang
+- `cd julia_training` and then run the scripts in REPL of the JuliaLang
 ```julia
  julia> include("EX1_maxmin_surf.jl")
 ```
