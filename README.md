@@ -7,7 +7,7 @@ This repo contains examples of Julia codes that may help you learn this language
 You can make figures and animations like the following one.   
 <img src="https://github.com/hydrocoast/julia_training/blob/master/ConAdvEq.gif" width="640">   
 In the branch `master` the figures are generated using the Plots.jl package.  
-The PyPlot.jl and GMT.jl package are also available by `git checkout pyplot` and `git checkout gmt`.   
+The PyPlot.jl and GMT.jl packages are also available by `git checkout pyplot` and `git checkout gmt`.   
 Please contact the author if you find a bug.  
 
 # Requirements
